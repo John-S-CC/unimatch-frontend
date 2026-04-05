@@ -12,7 +12,7 @@ async function cargarMaterias() {
 
   tabla.innerHTML = `
     <tr>
-      <td colspan="5">Cargando materias...</td>
+      <td colspan="6">Cargando materias...</td>
     </tr>
   `;
 
@@ -22,7 +22,7 @@ async function cargarMaterias() {
     if (!data.ok) {
       tabla.innerHTML = `
         <tr>
-          <td colspan="5">${data.mensaje || "No se pudieron cargar las materias."}</td>
+          <td colspan="6">${escapeHtml(data.mensaje || "No se pudieron cargar las materias.")}</td>
         </tr>
       `;
       return;
@@ -31,7 +31,7 @@ async function cargarMaterias() {
     if (!data.materias || data.materias.length === 0) {
       tabla.innerHTML = `
         <tr>
-          <td colspan="5">No hay materias disponibles.</td>
+          <td colspan="6">No hay materias disponibles.</td>
         </tr>
       `;
       return;
@@ -44,13 +44,13 @@ async function cargarMaterias() {
 
       fila.innerHTML = `
         <td>${escapeHtml(m.materia)}</td>
+        <td>${escapeHtml(String(m.id_materia || "-"))}</td>
         <td>${escapeHtml(String(m.id_grupo))}</td>
-        <td>${escapeHtml(m.horario)}</td>
+        <td>${escapeHtml(m.horario || "Sin horario")}</td>
         <td>${escapeHtml(String(m.cupos_disponibles))}</td>
-        <td>
-          <button type="button" onclick="matricular(${Number(m.id_grupo)})">
-            Matricular
-          </button>
+        <td class="acciones">
+          <button type="button" class="btn btn-primary" onclick="matricular(${Number(m.id_grupo)})">Matricular</button>
+          <button type="button" class="btn btn-danger" onclick="cancelar(${Number(m.id_grupo)})">Cancelar</button>
         </td>
       `;
 
@@ -60,7 +60,7 @@ async function cargarMaterias() {
     console.error(error);
     tabla.innerHTML = `
       <tr>
-        <td colspan="5">Error de conexión con el servidor.</td>
+        <td colspan="6">Error de conexión con el servidor.</td>
       </tr>
     `;
   }
@@ -74,6 +74,24 @@ async function matricular(grupoId) {
   try {
     const data = await matricularMateria(grupoId);
     alert(data.mensaje || (data.ok ? "Matrícula realizada." : "No fue posible matricular."));
+
+    if (data.ok) {
+      cargarMaterias();
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Error de conexión con el servidor.");
+  }
+}
+
+async function cancelar(grupoId) {
+  if (!confirm("¿Deseas cancelar este grupo?")) {
+    return;
+  }
+
+  try {
+    const data = await cancelarMateria(grupoId);
+    alert(data.mensaje || (data.ok ? "Matrícula cancelada." : "No fue posible cancelar."));
 
     if (data.ok) {
       cargarMaterias();

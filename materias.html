@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Materias - UniMatch</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f4f6f8;margin:0;padding:30px;color:#213547}
+    .container{max-width:1200px;margin:0 auto;background:#fff;padding:25px;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+    h1{margin-top:0}
+    .top-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+    .btn{padding:10px 16px;border:none;border-radius:8px;cursor:pointer;font-size:14px}
+    .btn-primary{background:#2a9d8f;color:#fff}
+    .btn-secondary{background:#6c757d;color:#fff}
+    .btn-danger{background:#d62828;color:#fff}
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid #ddd;padding:10px;text-align:left;font-size:14px;vertical-align:top}
+    th{background:#1d3557;color:#fff}
+    .acciones{display:flex;gap:8px;flex-wrap:wrap}
+    .usuario{font-size:14px;color:#666;margin-bottom:16px}
+  </style>
+</head>
+<body>
+  <script src="js/auth.js"></script>
+  <script>verificarSesion();</script>
+  <div class="container">
+    <h1>Materias disponibles</h1>
+    <div class="usuario">Sesión activa de: <strong id="nombreUsuario">Usuario</strong></div>
+
+    <div class="top-actions">
+      <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">Volver al panel</button>
+      <button class="btn btn-secondary" onclick="window.location.href='crear_solicitud.html'">Crear solicitud</button>
+      <button class="btn btn-secondary" onclick="window.location.href='consultar_solicitudes.html'">Mis solicitudes</button>
+      <button class="btn btn-secondary" onclick="window.location.href='mis_materias.html'">Materias</button>
+      <button class="btn btn-secondary" onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Materia</th>
+          <th>ID materia</th>
+          <th>Grupo</th>
+          <th>Horario</th>
+          <th>Cupos disponibles</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla_materias">
+        <tr><td colspan="6">Cargando materias...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/materias.js"></script>
+  <script>pintarUsuario('#nombreUsuario');</script>
+</body>
+</html>
