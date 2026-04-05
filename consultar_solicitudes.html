@@ -1,29 +1,192 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Consultar Solicitudes</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consultar Solicitudes - UniMatch</title>
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#f4f6f8;
+      margin:0;
+      padding:30px;
+    }
+    .container{
+      max-width:1100px;
+      margin:0 auto;
+      background:#fff;
+      padding:25px;
+      border-radius:12px;
+      box-shadow:0 4px 16px rgba(0,0,0,.08);
+    }
+    h1{
+      margin-top:0;
+      color:#1d3557;
+    }
+    .top-actions{
+      display:flex;
+      gap:12px;
+      margin-bottom:20px;
+    }
+    button{
+      padding:10px 16px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:14px;
+    }
+    .btn-primary{
+      background:#2a9d8f;
+      color:#fff;
+    }
+    .btn-secondary{
+      background:#6c757d;
+      color:#fff;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+    }
+    th, td{
+      border:1px solid #ddd;
+      padding:10px;
+      text-align:left;
+      font-size:14px;
+    }
+    th{
+      background:#1d3557;
+      color:#fff;
+    }
+    .msg{
+      margin-top:16px;
+      font-weight:bold;
+    }
+    .error{ color:#c1121f; }
+  </style>
 </head>
-<script src="js/auth.js"></script>
-<script>
-  verificarSesion();
-</script>
 <body>
+  <script src="js/auth.js"></script>
+  <script>
+    verificarSesion();
+  </script>
 
-<h2>Consultar Solicitudes</h2>
+  <div class="container">
+    <h1>Mis solicitudes</h1>
 
-<table border="1">
-  <tr>
-    <th>ID</th>
-    <th>Tipo</th>
-    <th>Estado</th>
-  </tr>
-  <tr>
-    <td>1</td>
-    <td>Cancelación</td>
-    <td>Pendiente</td>
-  </tr>
-</table>
+    <div class="top-actions">
+      <button class="btn-primary" onclick="window.location.href='crear_solicitud.html'">
+        Nueva solicitud
+      </button>
+      <button class="btn-secondary" onclick="cerrarSesion()">
+        Cerrar sesión
+      </button>
+    </div>
 
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tipo</th>
+          <th>Grupo origen</th>
+          <th>Grupo destino</th>
+          <th>Materia origen</th>
+          <th>Materia destino</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody id="tabla_solicitudes">
+        <tr>
+          <td colspan="8">Cargando solicitudes...</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div id="mensaje" class="msg"></div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    const tabla = document.getElementById("tabla_solicitudes");
+    const mensaje = document.getElementById("mensaje");
+
+    document.addEventListener("DOMContentLoaded", cargarSolicitudes);
+
+    async function cargarSolicitudes() {
+      tabla.innerHTML = `
+        <tr>
+          <td colspan="8">Cargando solicitudes...</td>
+        </tr>
+      `;
+
+      mensaje.textContent = "";
+      mensaje.className = "msg";
+
+      try {
+        const data = await listarSolicitudes();
+
+        if (!data.ok) {
+          tabla.innerHTML = `
+            <tr>
+              <td colspan="8">${data.mensaje || "No se pudieron cargar las solicitudes."}</td>
+            </tr>
+          `;
+          return;
+        }
+
+        if (!data.solicitudes || data.solicitudes.length === 0) {
+          tabla.innerHTML = `
+            <tr>
+              <td colspan="8">No tienes solicitudes registradas.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        tabla.innerHTML = "";
+
+        data.solicitudes.forEach((s) => {
+          const fila = document.createElement("tr");
+
+          fila.innerHTML = `
+            <td>${escapeHtml(s.id_solicitud)}</td>
+            <td>${escapeHtml(s.tipo_solicitud)}</td>
+            <td>${escapeHtml(valorVacio(s.grupo_origen))}</td>
+            <td>${escapeHtml(valorVacio(s.grupo_destino))}</td>
+            <td>${escapeHtml(valorVacio(s.materia_origen))}</td>
+            <td>${escapeHtml(valorVacio(s.materia_destino))}</td>
+            <td>${escapeHtml(s.estado)}</td>
+            <td>${escapeHtml(s.fecha_solicitud)}</td>
+          `;
+
+          tabla.appendChild(fila);
+        });
+
+      } catch (error) {
+        console.error(error);
+        tabla.innerHTML = `
+          <tr>
+            <td colspan="8">Error de conexión con el servidor.</td>
+          </tr>
+        `;
+        mensaje.textContent = "No fue posible cargar las solicitudes.";
+        mensaje.classList.add("error");
+      }
+    }
+
+    function valorVacio(valor) {
+      return valor === null || valor === "" ? "-" : String(valor);
+    }
+
+    function escapeHtml(texto) {
+      return String(texto)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
 </body>
 </html>

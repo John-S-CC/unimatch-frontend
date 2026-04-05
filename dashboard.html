@@ -548,7 +548,7 @@
 
       <div class="toolbar">
         <div class="capsule small">🔑 &nbsp; 🚪</div>
-        <div class="welcome-line">Hola, John Sebastian Coronado Caro, bienvenido(a) a su Campus TI</div>
+        <div class="welcome-line">Hola, <span id="nombreUsuario">Usuario</span>, bienvenido(a) a su Campus TI</div>
         <div class="capsule last-login">Último Ingreso 17-03-2026 13:20:20</div>
       </div>
 
@@ -614,8 +614,7 @@
                 <div class="app"><div class="app-icon i-ig"></div>Pedido IG</div>
                 <div class="app"><div class="app-icon i-user"></div>Caracterización<br>del Usuario</div>
                 <div class="app"><div class="app-icon i-world"></div>Dialogando<br>con el Mundo</div>
-                <script src="js/auth.js"></script>
-              </div>
+                </div>
             </div>
           </div>
 
@@ -627,8 +626,7 @@
                 <div class="mini-btn">Ver más 🔍</div>
                 <div class="mini-btn">Editar ✏️</div>
                 <button onclick="cerrarSesion()">Cerrar sesión</button>
-<script src="js/auth.js"></script>
-              </div>
+</div>
             </div>
           </div>
         </div>
@@ -637,5 +635,6 @@
       <div class="footer-brand">HermeSoft<small>2.1</small></div>
     </div>
   </div>
+<script>pintarUsuario("#nombreUsuario");</script>
 </body>
 </html>
