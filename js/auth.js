@@ -7,10 +7,16 @@ function getUsuarioActual() {
   }
 }
 
+function limpiarSesion() {
+  localStorage.removeItem("usuario");
+  localStorage.removeItem("token");
+}
+
 function verificarSesion() {
   const token = localStorage.getItem("token");
 
   if (!token) {
+    limpiarSesion();
     window.location.href = "index.html";
     return false;
   }
@@ -19,8 +25,7 @@ function verificarSesion() {
 }
 
 function cerrarSesion() {
-  localStorage.removeItem("usuario");
-  localStorage.removeItem("token");
+  limpiarSesion();
   window.location.href = "index.html";
 }
 

@@ -1,4 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const tabla = document.getElementById("tabla_materias");
+
+  if (tabla) {
+    tabla.addEventListener("click", async (event) => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+
+      const grupoId = Number(button.dataset.grupoId || 0);
+      if (!grupoId) return;
+
+      if (button.dataset.action === "matricular") {
+        await matricular(grupoId);
+      }
+
+      if (button.dataset.action === "cancelar") {
+        await cancelar(grupoId);
+      }
+    });
+  }
+
   cargarMaterias();
 });
 
@@ -28,7 +48,7 @@ async function cargarMaterias() {
       return;
     }
 
-    if (!data.materias || data.materias.length === 0) {
+    if (!Array.isArray(data.materias) || data.materias.length === 0) {
       tabla.innerHTML = `
         <tr>
           <td colspan="6">No hay materias disponibles.</td>
@@ -49,8 +69,8 @@ async function cargarMaterias() {
         <td>${escapeHtml(m.horario || "Sin horario")}</td>
         <td>${escapeHtml(String(m.cupos_disponibles))}</td>
         <td class="acciones">
-          <button type="button" class="btn btn-primary" onclick="matricular(${Number(m.id_grupo)})">Matricular</button>
-          <button type="button" class="btn btn-danger" onclick="cancelar(${Number(m.id_grupo)})">Cancelar</button>
+          <button type="button" class="btn btn-primary" data-action="matricular" data-grupo-id="${Number(m.id_grupo)}">Matricular</button>
+          <button type="button" class="btn btn-danger" data-action="cancelar" data-grupo-id="${Number(m.id_grupo)}">Cancelar</button>
         </td>
       `;
 
@@ -60,7 +80,7 @@ async function cargarMaterias() {
     console.error(error);
     tabla.innerHTML = `
       <tr>
-        <td colspan="6">Error de conexión con el servidor.</td>
+        <td colspan="6">${escapeHtml(error.message || "Error de conexión con el servidor.")}</td>
       </tr>
     `;
   }
@@ -80,7 +100,7 @@ async function matricular(grupoId) {
     }
   } catch (error) {
     console.error(error);
-    alert("Error de conexión con el servidor.");
+    alert(error.message || "Error de conexión con el servidor.");
   }
 }
 
@@ -98,7 +118,7 @@ async function cancelar(grupoId) {
     }
   } catch (error) {
     console.error(error);
-    alert("Error de conexión con el servidor.");
+    alert(error.message || "Error de conexión con el servidor.");
   }
 }
 
