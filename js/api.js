@@ -1,11 +1,28 @@
-const API_CANDIDATES = [
-  window.API_BASE,
-  localStorage.getItem("api_base"),
-  "http://localhost:8000/api/",
-  "http://localhost:8000/unimatch-backend/api/"
-].filter(Boolean);
+function normalizeBase(base) {
+  if (!base || typeof base !== "string") return null;
+  return base.endsWith("/") ? base : `${base}/`;
+}
 
-const API_BASE = API_CANDIDATES[0];
+function buildApiCandidates() {
+  const candidates = [
+    window.API_BASE,
+    localStorage.getItem("api_base")
+  ];
+
+  if (window.location?.origin?.startsWith("http")) {
+    candidates.push(`${window.location.origin}/api/`);
+    candidates.push(`${window.location.origin}/unimatch-backend/api/`);
+  }
+
+  candidates.push(
+    "http://localhost:8000/api/",
+    "http://localhost:8000/unimatch-backend/api/"
+  );
+
+  return [...new Set(candidates.map(normalizeBase).filter(Boolean))];
+}
+
+const API_CANDIDATES = buildApiCandidates();
 
 function getUsuarioStorage() {
   try {
@@ -20,18 +37,36 @@ function getToken() {
   return localStorage.getItem("token");
 }
 
+async function parseResponse(response) {
+  const text = await response.text();
+
+  if (!text) {
+    return {
+      ok: response.ok,
+      mensaje: response.ok ? "Operación completada." : "Respuesta vacía del servidor."
+    };
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    throw new Error(`La API devolvió una respuesta no válida: ${text.slice(0, 180)}`);
+  }
+}
+
 async function request(endpoint, options = {}) {
   let lastError = null;
 
   for (const base of API_CANDIDATES) {
     try {
       const headers = {
+        Accept: "application/json",
         ...(options.headers || {})
       };
 
       const token = getToken();
       if (token) {
-        headers["Authorization"] = "Bearer " + token;
+        headers.Authorization = `Bearer ${token}`;
       }
 
       const response = await fetch(base + endpoint, {
@@ -39,11 +74,15 @@ async function request(endpoint, options = {}) {
         headers
       });
 
-      const text = await response.text();
-      const data = JSON.parse(text);
+      const data = await parseResponse(response);
 
-      if (!response.ok && data && !data.ok) {
-        return data;
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("usuario");
+      }
+
+      if (data && typeof data === "object") {
+        data.httpStatus = response.status;
       }
 
       localStorage.setItem("api_base", base);
@@ -54,11 +93,11 @@ async function request(endpoint, options = {}) {
   }
 
   console.error("No fue posible conectar con ninguna API candidata.", lastError);
-  throw new Error("No fue posible conectar con la API.");
+  throw new Error(lastError?.message || "No fue posible conectar con la API.");
 }
 
 async function loginUsuario(correo, password) {
-  return await request("login.php", {
+  return request("login.php", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -68,16 +107,14 @@ async function loginUsuario(correo, password) {
 }
 
 async function listarMaterias() {
-  return await request("listar_materias.php", {
-    method: "GET"
-  });
+  return request("listar_materias.php", { method: "GET" });
 }
 
 async function matricularMateria(grupoId) {
   const body = new URLSearchParams();
   body.append("grupo_id", grupoId);
 
-  return await request("matricular_materia.php", {
+  return request("matricular_materia.php", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
@@ -90,7 +127,7 @@ async function cancelarMateria(grupoId) {
   const body = new URLSearchParams();
   body.append("grupo_id", grupoId);
 
-  return await request("cancelar_materia.php", {
+  return request("cancelar_materia.php", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
@@ -102,13 +139,13 @@ async function cancelarMateria(grupoId) {
 async function crearSolicitud(payload) {
   const body = new URLSearchParams();
 
-  Object.keys(payload).forEach((key) => {
-    if (payload[key] !== null && payload[key] !== undefined && payload[key] !== "") {
-      body.append(key, payload[key]);
+  Object.entries(payload || {}).forEach(([key, value]) => {
+    if (value !== null && value !== undefined && value !== "") {
+      body.append(key, value);
     }
   });
 
-  return await request("crear_solicitud.php", {
+  return request("crear_solicitud.php", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
@@ -118,17 +155,13 @@ async function crearSolicitud(payload) {
 }
 
 async function listarSolicitudes() {
-  return await request("listar_solicitudes.php", {
-    method: "GET"
-  });
+  return request("listar_solicitudes.php", { method: "GET" });
 }
+
 async function obtenerOpcionesSolicitud() {
-  return await request("opciones_solicitud.php", {
-    method: "GET"
-  });
+  return request("opciones_solicitud.php", { method: "GET" });
 }
+
 async function obtenerMisMaterias() {
-  return await request("mis_materias.php", {
-    method: "GET"
-  });
+  return request("mis_materias.php", { method: "GET" });
 }
