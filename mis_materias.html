@@ -3,27 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mis Materias Inscritas - UniMatch</title>
-  <link rel="stylesheet" href="css/mis_materias.css">
+  <title>UniMatch · Mis materias</title>
+  <link rel="stylesheet" href="css/app.css">
 </head>
-<body>
-  <div class="container">
-    <h1>Mis materias inscritas</h1>
-    <p>Consulta tus materias activas y realiza acciones rápidas sobre cada una.</p>
+<body data-page="mis_materias">
+    <div data-app-shell="header"></div>
 
-    <div class="actions-top">
-      <button class="btn-primary" data-action="go-materias">Ir a matricular materias</button>
-      <button class="btn-secondary" data-action="go-crear-solicitud">Crear solicitud manual</button>
-      <button class="btn-secondary" data-action="go-solicitudes">Ver solicitudes</button>
-      <button class="btn-danger" data-action="logout">Cerrar sesión</button>
-    </div>
+  <main class="page-main">
+    <section class="page-header compact-header">
+      <div>
+        <h1 class="page-title">Mis materias inscritas</h1>
+        <p class="page-subtitle">Consulta tus materias activas y ejecuta acciones rápidas sin depender del formulario de solicitudes.</p>
+      </div>
+      <span class="page-chip">Cancelación directa</span>
+    </section>
 
-    <div id="contenido"></div>
-    <div id="mensaje" class="msg error"></div>
-  </div>
+    <section class="overview-strip overview-strip-3">
+      <article class="overview-item">
+        <span>Estado</span>
+        <strong>Activas</strong>
+        <small>Visualiza solo tus materias vigentes</small>
+      </article>
+      <article class="overview-item">
+        <span>Acción</span>
+        <strong>Cancelación directa</strong>
+        <small>Sin formulario intermedio</small>
+      </article>
+      <article class="overview-item">
+        <span>Navegación</span>
+        <strong>Limpia</strong>
+        <small>Sin botones duplicados</small>
+      </article>
+    </section>
 
+    <section class="table-card">
+      <div class="table-meta">
+        <div>
+          <h2 class="mb-0">Materias activas</h2>
+          <p class="mb-0">La cancelación se procesa de forma directa.</p>
+        </div>
+      </div>
+
+      <div id="contenido"></div>
+      <div id="mensaje" class="msg" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <div data-app-shell="footer"></div>
   <script src="js/auth.js"></script>
+  <script src="js/app-ui.js"></script>
+  <script src="js/app-shell.js"></script>
+  <script src="js/app-init.js"></script>
   <script src="js/api.js"></script>
   <script src="js/mis_materias.page.js"></script>
-</body>
+  </body>
 </html>

@@ -3,64 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crear Solicitud - UniMatch</title>
-  <link rel="stylesheet" href="css/crear_solicitud.css">
+  <title>UniMatch · Crear solicitud</title>
+  <link rel="stylesheet" href="css/app.css">
 </head>
-<body>
-  <div class="container">
-    <h1>Crear solicitud</h1>
-    <p>Los cambios de grupo y de materia se envían como solicitud. La cancelación y la nueva inscripción se procesan de inmediato si cumplen las validaciones.</p>
+<body data-page="crear_solicitud">
+    <div data-app-shell="header"></div>
 
-    <form id="formSolicitud">
-      <div class="row">
-        <div class="field">
-          <label for="tipo_solicitud">Tipo de solicitud</label>
-          <select id="tipo_solicitud" required>
-            <option value="">Seleccione...</option>
-            <option value="cancelacion">Cancelación</option>
-            <option value="cambio_grupo">Cambio de grupo</option>
-            <option value="cambio_materia">Cambio de materia</option>
-            <option value="nueva_inscripcion">Nueva inscripción</option>
-          </select>
-        </div>
-
-        <div class="field" id="bloque_origen">
-          <label for="origen_select">Materia y grupo de origen</label>
-          <select id="origen_select">
-            <option value="">Seleccione...</option>
-          </select>
-        </div>
+  <main class="page-main">
+    <section class="page-header compact-header">
+      <div>
+        <h1 class="page-title">Crear o procesar una solicitud</h1>
+        <p class="page-subtitle">Usa esta vista para cambios de grupo o materia. Las cancelaciones y nuevas inscripciones se ejecutan directamente cuando cumplen las validaciones del sistema.</p>
       </div>
+      <span class="page-chip">Flujo mixto</span>
+    </section>
 
-      <div class="row">
-        <div class="field" id="bloque_destino">
-          <label for="destino_select">Opción de destino</label>
-          <select id="destino_select">
-            <option value="">Seleccione...</option>
-          </select>
-        </div>
+    <section class="overview-strip overview-strip-3">
+      <article class="overview-item">
+        <span>Casos directos</span>
+        <strong>Inscripción y cancelación</strong>
+        <small>Se procesan sin quedar pendientes</small>
+      </article>
+      <article class="overview-item">
+        <span>Casos con solicitud</span>
+        <strong>Cambio de grupo o materia</strong>
+        <small>Quedan en seguimiento</small>
+      </article>
+      <article class="overview-item">
+        <span>Resumen</span>
+        <strong>Validación previa</strong>
+        <small>Origen, destino y resultado esperado</small>
+      </article>
+    </section>
 
-        <div class="field">
-          <label for="resumen_texto">Resumen</label>
-          <div id="resumen_texto" class="info-box">
-            La información seleccionada aparecerá aquí.
+    <section class="form-card">
+      <form id="formSolicitud">
+        <div class="form-grid">
+          <div class="field">
+            <label for="tipo_solicitud">Tipo de solicitud</label>
+            <select id="tipo_solicitud" required>
+              <option value="">Seleccione...</option>
+              <option value="cancelacion">Cancelación</option>
+              <option value="cambio_grupo">Cambio de grupo</option>
+              <option value="cambio_materia">Cambio de materia</option>
+              <option value="nueva_inscripcion">Nueva inscripción</option>
+            </select>
+          </div>
+
+          <div class="field" id="bloque_origen">
+            <label for="origen_select">Materia y grupo de origen</label>
+            <select id="origen_select">
+              <option value="">Seleccione...</option>
+            </select>
+          </div>
+
+          <div class="field" id="bloque_destino">
+            <label for="destino_select">Opción de destino</label>
+            <select id="destino_select">
+              <option value="">Seleccione...</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="resumen_texto">Resumen</label>
+            <div id="resumen_texto" class="info-box">La información seleccionada aparecerá aquí.</div>
           </div>
         </div>
-      </div>
 
-      <div class="actions">
-        <button type="submit" class="btn-primary">Procesar</button>
-        <button type="button" class="btn-secondary" data-action="go-mis-materias">Mis materias</button>
-        <button type="button" class="btn-secondary" data-action="go-solicitudes">Ver solicitudes</button>
-        <button type="button" class="btn-danger" data-action="logout">Cerrar sesión</button>
-      </div>
+        <div class="actions toolbar toolbar-end">
+          <button type="submit" class="btn-primary">Procesar acción</button>
+        </div>
 
-      <div id="mensaje" class="msg"></div>
-    </form>
-  </div>
+        <div id="mensaje" class="msg" aria-live="polite"></div>
+      </form>
+    </section>
+  </main>
 
+  <div data-app-shell="footer"></div>
   <script src="js/auth.js"></script>
+  <script src="js/app-ui.js"></script>
+  <script src="js/app-shell.js"></script>
+  <script src="js/app-init.js"></script>
   <script src="js/api.js"></script>
   <script src="js/crear_solicitud.page.js"></script>
-</body>
+  </body>
 </html>

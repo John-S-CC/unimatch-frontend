@@ -1,640 +1,132 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hermesoft 2.1 - Réplica</title>
-  <style>
-    :root {
-      --bg: #efefef;
-      --green-1: #0e5f10;
-      --green-2: #2f8a2d;
-      --green-3: #86c66b;
-      --green-4: #d5efc7;
-      --line: #9fb89b;
-      --soft-line: #cfcfcf;
-      --text: #2f2f2f;
-      --shadow: 0 1px 0 rgba(255,255,255,.95), 0 1px 3px rgba(0,0,0,.18);
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      font-family: Tahoma, Arial, sans-serif;
-      color: var(--text);
-    }
-
-    .browser {
-      width: 1600px;
-      min-height: 900px;
-      margin: 0 auto;
-      background: var(--bg);
-      position: relative;
-    }
-
-    .top-black {
-      height: 30px;
-      background: #0c0c0c;
-      border-bottom: 1px solid #262626;
-    }
-
-    .address-bar {
-      height: 36px;
-      background: #2e2e2e;
-      border-bottom: 1px solid #5b5b5b;
-      color: #a8a8a8;
-      display: flex;
-      align-items: center;
-      padding: 0 14px;
-      font-size: 13px;
-      letter-spacing: .1px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-
-    .page {
-      width: 1148px;
-      margin: 0 auto;
-      padding-top: 16px;
-      position: relative;
-    }
-
-    .top-logos {
-      position: relative;
-      height: 92px;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      gap: 22px;
-    }
-
-    .logo-left, .logo-center, .logo-right {
-      height: 80px;
-      position: relative;
-    }
-
-    .logo-left {
-      width: 175px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      color: #4b4b4b;
-    }
-
-    .seal {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: 3px solid #b1b1b1;
-      position: relative;
-      background: radial-gradient(circle at 50% 50%, #fff 0, #f8f8f8 45%, #e4e4e4 100%);
-      box-shadow: inset 0 0 0 2px #efefef;
-    }
-
-    .seal::before,
-    .seal::after {
-      content: "";
-      position: absolute;
-      inset: 7px;
-      border: 1px solid #ababab;
-      border-radius: 50%;
-    }
-
-    .logo-left .text {
-      line-height: 1;
-      text-align: left;
-      font-family: Georgia, 'Times New Roman', serif;
-    }
-
-    .logo-left .text .u {
-      font-size: 27px;
-      font-weight: 700;
-      letter-spacing: -.6px;
-    }
-
-    .logo-left .text .sub {
-      font-size: 12px;
-      font-weight: 700;
-      margin-top: 2px;
-    }
-
-    .logo-center {
-      width: 180px;
-      filter: drop-shadow(0 2px 1px rgba(0,0,0,.18));
-      background:
-        linear-gradient(135deg, transparent 0 18%, rgba(255,255,255,.55) 18% 22%, transparent 22%),
-        linear-gradient(45deg, #00872d 0 20%, transparent 20%),
-        linear-gradient(45deg, transparent 0 44%, #0a8735 44% 56%, transparent 56%),
-        linear-gradient(135deg, transparent 0 35%, #74b469 35% 52%, transparent 52%),
-        linear-gradient(135deg, transparent 0 55%, #d7e9d0 55% 66%, transparent 66%),
-        linear-gradient(45deg, transparent 0 68%, #006f2c 68% 82%, transparent 82%),
-        linear-gradient(135deg, transparent 0 72%, #79c16e 72% 88%, transparent 88%);
-      clip-path: polygon(23% 0, 60% 0, 88% 29%, 57% 60%, 82% 84%, 60% 100%, 24% 62%, 0 32%);
-    }
-
-    .logo-right {
-      width: 370px;
-      text-align: center;
-      color: #5b5b5b;
-      padding-top: 2px;
-    }
-
-    .logo-right .brand {
-      font-size: 52px;
-      line-height: 44px;
-      font-weight: 800;
-      letter-spacing: -2px;
-      transform: scaleX(.92);
-      color: #4d4d4d;
-    }
-
-    .logo-right .sub1 {
-      font-size: 24px;
-      margin-top: 4px;
-      font-weight: 700;
-    }
-
-    .logo-right .sub2 {
-      font-size: 16px;
-      font-style: italic;
-      color: #6c6c6c;
-      margin-top: 2px;
-    }
-
-    .decor-grid {
-      position: absolute;
-      right: 170px;
-      top: 2px;
-      width: 190px;
-      height: 72px;
-      opacity: .4;
-      background-image:
-        linear-gradient(#b7b7b7 1px, transparent 1px),
-        linear-gradient(90deg, #b7b7b7 1px, transparent 1px);
-      background-size: 18px 18px;
-      transform: skew(-7deg);
-      mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
-    }
-
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: -2px auto 4px;
-      width: 804px;
-    }
-
-    .capsule {
-      height: 29px;
-      border-radius: 16px;
-      border: 1px solid #cfcfcf;
-      background: linear-gradient(#f7f7f7, #e8e8e8);
-      box-shadow: inset 0 1px 0 #fff;
-      color: #444;
-      font-size: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 16px;
-    }
-
-    .capsule.small {
-      width: 168px;
-      justify-content: space-around;
-      padding: 0 12px;
-    }
-
-    .capsule.last-login {
-      width: 214px;
-      font-size: 12px;
-    }
-
-    .welcome-line {
-      text-align: center;
-      font-size: 12px;
-      color: #2d2d2d;
-      flex: 1;
-    }
-
-    .content {
-      width: 804px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 158px 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    .side-wrapper {
-      background: linear-gradient(#bce5af, #a7d596);
-      border: 1px solid #9fc28f;
-      border-radius: 15px;
-      padding: 10px 11px 14px;
-      min-height: 333px;
-      box-shadow: var(--shadow);
-    }
-
-    .module {
-      margin-bottom: 12px;
-      border-radius: 4px;
-      overflow: hidden;
-      border: 1px solid #5b9b57;
-      background: #fdfdfd;
-    }
-
-    .module .title,
-    .main-box .title,
-    .announcements .title {
-      height: 27px;
-      display: flex;
-      align-items: center;
-      padding: 0 8px;
-      font-size: 13px;
-      color: #fff;
-      font-weight: 700;
-      text-shadow: 0 1px 0 rgba(0,0,0,.35);
-      background:
-        linear-gradient(#0d510e 0%, #0b6c0e 18%, #338e20 52%, #89c967 85%, #c6e6b7 100%);
-      border-bottom: 1px solid #4f944c;
-      position: relative;
-    }
-
-    .title .badge {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #fffbbe, #ffce4b 55%, #be7f00 100%);
-      margin-right: 8px;
-      box-shadow: 0 0 0 2px rgba(255,255,255,.45);
-      flex: 0 0 auto;
-      position: relative;
-    }
-
-    .title .badge::before {
-      content: "";
-      position: absolute;
-      inset: 4px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,.8);
-    }
-
-    .title .edit-mini {
-      position: absolute;
-      right: 4px;
-      top: 3px;
-      font-size: 10px;
-      background: linear-gradient(#fefefe, #efefef);
-      border: 1px solid #8a8a8a;
-      color: #4b4b4b;
-      border-radius: 3px;
-      padding: 1px 7px;
-      text-shadow: none;
-      font-weight: 400;
-      height: 18px;
-      display: flex;
-      align-items: center;
-    }
-
-    .favorites-body {
-      padding: 12px 9px 8px;
-      font-size: 12px;
-      color: #252525;
-      min-height: 63px;
-      background: #fff;
-    }
-
-    .mini-actions {
-      display: flex;
-      justify-content: space-between;
-      padding: 0 8px 8px;
-      background: #fff;
-    }
-
-    .mini-btn {
-      font-size: 11px;
-      height: 22px;
-      border-radius: 3px;
-      background: linear-gradient(#fff, #e9e9e9);
-      border: 1px solid #a7a7a7;
-      display: inline-flex;
-      align-items: center;
-      padding: 0 9px;
-      color: #4d4d4d;
-      box-shadow: inset 0 1px 0 #fff;
-    }
-
-    .calendar-body {
-      padding: 6px 10px 10px;
-      background: #fff;
-    }
-
-    .calendar-controls {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 6px;
-    }
-
-    .select-like {
-      flex: 1;
-      height: 22px;
-      border: 1px solid #9a9a9a;
-      background: linear-gradient(#fff, #ededed);
-      font-size: 11px;
-      padding: 2px 5px;
-      color: #333;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    table.calendar {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 11px;
-      text-align: center;
-    }
-
-    table.calendar th,
-    table.calendar td {
-      border: 1px solid #dddddd;
-      width: 14.28%;
-      height: 18px;
-      padding: 0;
-      font-weight: 400;
-    }
-
-    table.calendar th {
-      background: #d8efcb;
-      color: #2f6022;
-      font-weight: 700;
-    }
-
-    .today {
-      background: #1ea33b;
-      color: #fff;
-      font-weight: 700;
-    }
-
-    .main-column { width: 100%; }
-
-    .main-box,
-    .announcements {
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid #b9b9b9;
-      background: linear-gradient(#f6f6f6, #fefefe 18%, #fff 18%);
-      box-shadow: var(--shadow);
-    }
-
-    .main-box { min-height: 357px; }
-
-    .main-box .title,
-    .announcements .title {
-      font-size: 22px;
-      font-family: 'Arial Narrow', Arial, sans-serif;
-      height: 31px;
-      padding-left: 10px;
-      letter-spacing: -.5px;
-    }
-
-    .main-box .title .edit-mini,
-    .announcements .title .edit-mini {
-      right: 5px;
-      top: 5px;
-    }
-
-    .main-inner {
-      border-top: 1px solid #9fd0a7;
-      min-height: 311px;
-      background: #fff;
-      padding: 24px 22px 18px;
-    }
-
-    .icon-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      row-gap: 18px;
-      column-gap: 10px;
-      justify-items: center;
-    }
-
-    .app {
-      width: 82px;
-      text-align: center;
-      font-size: 11px;
-      line-height: 12px;
-      color: #3c3c3c;
-    }
-
-    .app-icon {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 5px;
-      border-radius: 50%;
-      position: relative;
-      box-shadow: inset 0 1px 1px rgba(255,255,255,.8), 0 1px 2px rgba(0,0,0,.18);
-      border: 1px solid rgba(0,0,0,.12);
-      background: radial-gradient(circle at 35% 30%, #fff 0, #dcefd9 40%, #7dbd78 70%, #488945 100%);
-    }
-
-    .app-icon::before,
-    .app-icon::after {
-      content: "";
-      position: absolute;
-    }
-
-    .i-book::before { inset: 10px 14px 10px 14px; background: linear-gradient(90deg,#2d7cf7 0 48%,#cfe0ff 48% 52%,#f3f8ff 52%); border-radius: 3px; border: 1px solid rgba(0,0,0,.18); }
-    .i-check::before { width: 22px; height: 12px; border-left: 5px solid #cc1a1a; border-bottom: 5px solid #cc1a1a; transform: rotate(-45deg); left: 11px; top: 13px; }
-    .i-money::before { width: 25px; height: 25px; border-radius: 50%; left: 11px; top: 11px; background: radial-gradient(circle,#fff0 38%,#5f8b55 39% 41%,#f4f0da 42%); }
-    .i-money::after { content: "$"; left: 18px; top: 11px; color: #7a5f1f; font-weight: 700; font-size: 21px; }
-    .i-service::before { inset: 11px 11px 13px 11px; background: linear-gradient(#e5efcb,#a1c07a); border: 1px solid rgba(0,0,0,.16); border-radius: 6px; }
-    .i-service::after { width: 22px; height: 6px; background: #b78e39; left: 13px; top: 22px; transform: rotate(25deg); border-radius: 4px; }
-    .i-sis::before { width: 24px; height: 16px; background: #f1f1f1; border: 1px solid rgba(0,0,0,.16); left: 10px; top: 10px; box-shadow: 10px 10px 0 -1px #d09a21; }
-    .i-discount::before { content: "%"; left: 13px; top: 8px; font-size: 24px; color: #e89d00; font-weight: 700; transform: rotate(-20deg); }
-    .i-box::before { width: 24px; height: 18px; background: #f0de9d; left: 12px; top: 14px; border: 1px solid rgba(0,0,0,.15); box-shadow: inset 0 -6px 0 #d4b65b; }
-    .i-chat::before { width: 20px; height: 16px; background: #ffec5c; border-radius: 10px; left: 13px; top: 13px; box-shadow: 10px 6px 0 0 #f3be2d; }
-    .i-research::before { width: 12px; height: 22px; background: linear-gradient(#38b2ff,#0046db); left: 18px; top: 11px; border-radius: 7px 7px 12px 12px; }
-    .i-info::before { content: "i"; left: 18px; top: 8px; font-size: 28px; font-weight: 700; color: #226bbf; }
-    .i-well::before { width: 22px; height: 22px; border-radius: 50%; left: 13px; top: 13px; border: 6px solid #81c443; border-right-color: transparent; transform: rotate(-30deg); }
-    .i-class::before { width: 28px; height: 18px; left: 10px; top: 14px; background: #d2ad45; clip-path: polygon(0 100%, 100% 100%, 75% 0, 0 0); }
-    .i-survey::before { width: 26px; height: 26px; left: 11px; top: 11px; background: conic-gradient(#dd2b2b 0 40deg, #f0e2bc 40deg 180deg, #3e85ff 180deg 240deg, #72bd58 240deg 360deg); border-radius: 50%; }
-    .i-sig::before { width: 22px; height: 22px; left: 13px; top: 13px; border-radius: 50%; border: 4px solid #7bb1d8; }
-    .i-events::before { width: 24px; height: 20px; left: 12px; top: 13px; background: #fff4b8; border: 1px solid rgba(0,0,0,.15); box-shadow: inset 0 6px 0 #ffab2e; }
-    .i-ig::before { width: 24px; height: 24px; left: 12px; top: 12px; border-radius: 4px; background: linear-gradient(135deg,#8f4d00,#c2a25b,#7b5d2a); }
-    .i-user::before { width: 10px; height: 10px; border-radius: 50%; background: #f6c598; left: 12px; top: 12px; box-shadow: 12px 0 0 #f6c598, 6px 13px 0 7px #7fa7d7; }
-    .i-world::before { width: 26px; height: 26px; left: 11px; top: 11px; border-radius: 50%; background: radial-gradient(circle at 30% 35%, #b4f4ff, #58add5 55%, #3679a8); }
-    .i-world::after { width: 28px; height: 10px; left: 10px; top: 21px; background: #97d454; border-radius: 50%; }
-
-    .announcements { margin-top: 8px; }
-    .announcements .title { height: 28px; font-size: 20px; }
-
-    .announcements-body {
-      min-height: 50px;
-      border-top: 1px solid #9fd0a7;
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      color: #3c3c3c;
-      position: relative;
-      padding: 12px 130px 12px 18px;
-    }
-
-    .ann-actions {
-      position: absolute;
-      right: 8px;
-      bottom: 7px;
-      display: flex;
-      gap: 7px;
-    }
-
-    .footer-brand {
-      width: 804px;
-      margin: 8px auto 0;
-      text-align: right;
-      font-size: 22px;
-      color: #2d73b9;
-      font-family: Georgia, 'Times New Roman', serif;
-    }
-
-    .footer-brand small {
-      color: #9e9e9e;
-      font-size: 12px;
-      vertical-align: super;
-      margin-left: 1px;
-    }
-    .link{
-  text-decoration: none;
-  color: inherit;
-}
-
-.link:hover{
-  color: #138b4d;
-}
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniMatch · Inicio</title>
+  <link rel="stylesheet" href="css/app.css">
 </head>
-<script src="js/auth.js"></script>
-<script>
-  verificarSesion();
-</script>
-<body>
-  <div class="browser">    
-    
+<body data-page="dashboard">
+  <div data-app-shell="header"></div>
 
-    <div class="page">
-      <div class="top-logos">
-        <div class="logo-left">
-          <div class="seal"></div>
-          <div class="text">
-            <div class="u">UdeC</div>
-            <div class="sub">UNIVERSIDAD DE<br>CUNDINAMARCA</div>
-          </div>
-        </div>
-
-        <div class="logo-center"></div>
-
-        <div class="logo-right">
-          <div class="decor-grid"></div>
-          <div class="brand">UCUNDINAMARCA</div>
-          <div class="sub1">Generación Siglo 21</div>
-          <div class="sub2">“Educamos para la vida”</div>
+  <main class="page-main">
+    <section class="hero hero-clean hero-dashboard hero-portal">
+      <div>
+        <span class="hero-badge">Portal académico complementario</span>
+        <h1 id="dashboardGreetingTitle">Bienvenida al inicio académico.</h1>
+        <p id="dashboardGreetingText">Estamos organizando tu panorama del día para mostrarte horario, próximos bloques y movimientos recientes.</p>
+        <div class="hero-inline-pills" id="dashboardHeroPills">
+          <span class="mini-chip">Carga inteligente</span>
+          <span class="mini-chip">Seguimiento visual</span>
+          <span class="mini-chip">Microinteracciones activas</span>
         </div>
       </div>
-
-      <div class="toolbar">
-        <div class="capsule small">🔑 &nbsp; 🚪</div>
-        <div class="welcome-line">Hola, <span id="nombreUsuario">Usuario</span>, bienvenido(a) a su Campus TI</div>
-        <div class="capsule last-login">Último Ingreso 17-03-2026 13:20:20</div>
-      </div>
-
-      <div class="content">
-        <div class="side-wrapper">
-          <div class="module">
-            <div class="title"><span class="badge"></span>Mis Favoritos</div>
-            <div class="favorites-body">No has agregado ningún favorito</div>
-            <div class="mini-actions">
-              <div class="mini-btn">Ver más 🔍</div>
-              <div class="mini-btn">Editar ✏️</div>
-            </div>
+      <aside class="hero-aside hero-aside-spotlight portal-hero-card">
+        <span class="portal-mini-label">Estado del día</span>
+        <h3 id="dashboardLiveHeadline">Consultando tu agenda actual</h3>
+        <p id="dashboardLiveCopy">En unos segundos verás la clase en curso, la próxima clase y la concentración de bloques durante la semana.</p>
+        <div class="portal-hero-stats">
+          <div>
+            <strong id="heroPendingCount">0</strong>
+            <small>solicitudes activas</small>
           </div>
+          <div>
+            <strong id="heroTodayCount">0</strong>
+            <small>bloques hoy</small>
+          </div>
+        </div>
+      </aside>
+    </section>
 
-          <div class="module">
-            <div class="title"><span class="badge"></span>Mi Calendario</div>
-            <div class="calendar-body">
-              <div class="calendar-controls">
-                <div class="select-like">Marzo <span>▾</span></div>
-                <div class="select-like" style="max-width:48px;">2026 <span>▾</span></div>
-              </div>
-              <table class="calendar">
-                <thead>
-                  <tr><th>Do</th><th>Lu</th><th>Ma</th><th>Mi</th><th>Ju</th><th>Vi</th><th>Sa</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr>
-                  <tr><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td></tr>
-                  <tr><td>15</td><td>16</td><td class="today">17</td><td>18</td><td>19</td><td>20</td><td>21</td></tr>
-                  <tr><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td></tr>
-                  <tr><td>29</td><td>30</td><td>31</td><td></td><td></td><td></td><td></td></tr>
-                </tbody>
-              </table>
-            </div>
+    <section class="overview-strip overview-strip-4" id="dashboardOverview">
+      <article class="overview-item">
+        <span>Materias activas</span>
+        <strong id="overviewActiveSubjects">0</strong>
+        <small>Carga actual del estudiante</small>
+      </article>
+      <article class="overview-item">
+        <span>Próxima clase</span>
+        <strong id="overviewNextClass">Sin datos</strong>
+        <small id="overviewNextClassMeta">Se actualizará con tu horario</small>
+      </article>
+      <article class="overview-item">
+        <span>Bloques semanales</span>
+        <strong id="overviewWeeklyBlocks">0</strong>
+        <small>Sesiones programadas esta semana</small>
+      </article>
+      <article class="overview-item">
+        <span>Solicitudes abiertas</span>
+        <strong id="overviewOpenRequests">0</strong>
+        <small>Pendientes, procesando o en permuta</small>
+      </article>
+    </section>
+
+    <section class="portal-grid">
+      <article class="page-card portal-panel portal-panel-chart">
+        <div class="section-heading compact-panel-heading">
+          <div>
+            <span class="section-kicker">Intensidad semanal</span>
+            <h2>Distribución por día</h2>
+            <p>Una lectura rápida para identificar la carga académica de la semana.</p>
+          </div>
+        </div>
+        <div class="weekly-bars" id="dashboardWeekBars"></div>
+      </article>
+
+      <article class="page-card portal-panel portal-panel-today">
+        <div class="section-heading compact-panel-heading">
+          <div>
+            <span class="section-kicker">Agenda del día</span>
+            <h2>Hoy en tu horario</h2>
+            <p id="dashboardDateText">Cargando fecha actual...</p>
+          </div>
+        </div>
+        <div class="today-stack" id="dashboardTodayStack"></div>
+      </article>
+    </section>
+
+    <section class="portal-grid portal-grid-bottom mt-18">
+      <article class="page-card portal-panel portal-panel-timeline">
+        <div class="section-heading compact-panel-heading">
+          <div>
+            <span class="section-kicker">Movimiento reciente</span>
+            <h2>Actividad del estudiante</h2>
+            <p>Últimas novedades en matrículas, cancelaciones y solicitudes.</p>
+          </div>
+        </div>
+        <div class="timeline-list" id="dashboardTimeline"></div>
+      </article>
+
+      <article class="page-card schedule-board portal-panel portal-panel-schedule">
+        <div class="section-heading compact-panel-heading">
+          <div>
+            <span class="section-kicker">Horario semanal</span>
+            <h2>Semana académica completa</h2>
+            <p>Vista organizada por día para planificar mejor tu ritmo de estudio.</p>
           </div>
         </div>
 
-        <div class="main-column">
-          <div class="main-box">
-            <div class="title">Gestión <span class="badge" style="margin-left:8px;"></span><span class="edit-mini">Editar ✏️</span></div>
-            <div class="main-inner">
-              <div class="icon-grid">
-                <a href="academico.html" class="app text-decoration-none text-dark">
-                <div class="app-icon i-book"></div>
-                  Académico<br>Estudiante
-                </a>
-                <div class="app"><div class="app-icon i-check"></div>Evaluación<br>docente</div>
-                <div class="app"><div class="app-icon i-money"></div>Fraccionamiento<br>de Pago de<br>Matrícula</div>
-                <div class="app"><div class="app-icon i-service"></div>Servicios de<br>Tesorería</div>
-                <div class="app"><div class="app-icon i-sis"></div>Sistema<br>Institucional de<br>Solicitudes (SIS)</div>
-                <div class="app"><div class="app-icon i-discount"></div>Descuento<br>Electoral</div>
+        <div class="grid-3 dashboard-summary-grid" id="dashboardScheduleSummary"></div>
 
-                <div class="app"><div class="app-icon i-box"></div>Bienes y<br>servicios</div>
-                <div class="app"><div class="app-icon i-chat"></div>Atención<br>en Línea</div>
-                <div class="app"><div class="app-icon i-research"></div>Investigación<br>Universitaria</div>
-                <div class="app"><div class="app-icon i-info"></div>Sistema de<br>Atención e<br>Información al<br>Ciudadano</div>
-                <div class="app"><div class="app-icon i-well"></div>Bienestar<br>Universitario</div>
-                <div class="app"><div class="app-icon i-class"></div>Asignación<br>de Aulas</div>
-
-                <div class="app"><div class="app-icon i-survey"></div>Encuestas<br>Institucionales</div>
-                <div class="app"><div class="app-icon i-sig"></div>Sistemas<br>Integrados de<br>Gestión</div>
-                <div class="app"><div class="app-icon i-events"></div>Eventos<br>Ucundinamarca</div>
-                <div class="app"><div class="app-icon i-ig"></div>Pedido IG</div>
-                <div class="app"><div class="app-icon i-user"></div>Caracterización<br>del Usuario</div>
-                <div class="app"><div class="app-icon i-world"></div>Dialogando<br>con el Mundo</div>
-                </div>
-            </div>
-          </div>
-
-          <div class="announcements">
-            <div class="title">Anuncios <span class="badge" style="margin-left:8px;"></span></div>
-            <div class="announcements-body">
-              Las comunidades a las cuales perteneces no han publicado anuncios .
-              <div class="ann-actions">
-                <div class="mini-btn">Ver más 🔍</div>
-                <div class="mini-btn">Editar ✏️</div>
-                <button onclick="cerrarSesion()">Cerrar sesión</button>
-</div>
-            </div>
-          </div>
+        <div class="empty-state mt-18" id="dashboardLoadingState">
+          <h3>Cargando horario</h3>
+          <p>Estamos consultando tus materias matriculadas para mostrarte el horario actual.</p>
         </div>
-      </div>
 
-      <div class="footer-brand">HermeSoft<small>2.1</small></div>
-    </div>
-  </div>
-<script>pintarUsuario("#nombreUsuario");</script>
+        <div class="empty-state mt-18" id="dashboardErrorState" hidden></div>
+        <div class="empty-state mt-18" id="dashboardEmptyState" hidden></div>
+
+        <div class="week-grid mt-18" id="weeklySchedule" aria-label="Horario semanal de materias activas"></div>
+      </article>
+    </section>
+  </main>
+
+  <div data-app-shell="footer"></div>
+  <script src="js/auth.js"></script>
+  <script src="js/app-ui.js"></script>
+  <script src="js/app-shell.js"></script>
+  <script src="js/app-init.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
 </body>
 </html>

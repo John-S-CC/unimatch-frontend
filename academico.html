@@ -1,474 +1,94 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Academusoft Académico 5.0 - Réplica</title>
-  <style>
-    :root{
-      --green-dark:#027234;
-      --green:#138b4d;
-      --green-soft:#e8f2ed;
-      --line:#dadada;
-      --text:#4a4f57;
-      --muted:#7a8088;
-      --bg:#f5f5f5;
-      --panel:#ffffff;
-      --shadow:0 1px 2px rgba(0,0,0,.08);
-      --radius:7px;
-    }
-
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:#111;font-family:Segoe UI, Arial, sans-serif;color:var(--text)}
-
-    .window{
-      width:1598px;
-      height:838px;
-      margin:0 auto;
-      background:#fff;
-      border-radius:10px;
-      overflow:hidden;
-      border:1px solid #2b2b2b;
-      box-shadow:0 10px 30px rgba(0,0,0,.35);
-      position:relative;
-    }
-
-    .app{
-      display:grid;
-      grid-template-columns:371px 1fr;
-      grid-template-rows:64px 1fr 57px;
-      width:100%;
-      height:100%;
-      background:#f6f6f6;
-    }
-
-    .topbar{
-      grid-column:1 / -1;
-      background:var(--green-dark);
-      color:#fff;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:0 16px 0 12px;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width:0;
-    }
-
-    .logo{
-      width:58px;height:58px;border-radius:50%;
-      background:radial-gradient(circle at 35% 35%, #11864a 0 24%, #005f29 25% 45%, #f2d94c 46% 53%, #fff 54% 55%, #1b7e4a 56% 72%, #e6e6e6 73% 100%);
-      border:2px solid rgba(255,255,255,.15);
-      position:relative;
-      flex:0 0 auto;
-      overflow:hidden;
-    }
-    .logo::before{
-      content:"";
-      position:absolute;
-      inset:16px;
-      border-radius:50%;
-      background:conic-gradient(from 210deg,#0d6d38 0 55%, #f0bb2d 55% 70%, #cf2727 70% 86%, #0d6d38 86% 100%);
-    }
-    .logo::after{
-      content:"";
-      position:absolute;
-      left:20px;top:20px;width:18px;height:18px;border-radius:50%;
-      background:#0f5b31;
-      box-shadow:0 0 0 3px #f0bb2d inset;
-    }
-
-    .title{
-      font-size:18px;
-      font-weight:700;
-      letter-spacing:.1px;
-      white-space:nowrap;
-    }
-
-    .navtop{
-      display:flex;
-      align-items:center;
-      gap:28px;
-      font-size:15px;
-      font-weight:500;
-    }
-
-    .nav-item{display:flex;align-items:center;gap:8px;opacity:.98}
-    .nav-icon{
-      width:16px;height:16px;border:2px solid rgba(255,255,255,.8);border-radius:2px;position:relative;opacity:.9
-    }
-    .nav-icon.home::before{content:"";position:absolute;left:2px;right:2px;bottom:2px;top:6px;border-top:2px solid rgba(255,255,255,.8)}
-    .nav-icon.columns{border:none}
-    .nav-icon.columns::before,.nav-icon.columns::after{content:"";position:absolute;top:1px;bottom:1px;width:4px;border:2px solid rgba(255,255,255,.8);border-top:none;border-bottom:none;border-radius:1px}
-    .nav-icon.columns::before{left:1px}.nav-icon.columns::after{right:1px}
-    .nav-icon.lang{border:none}
-    .nav-icon.lang::before{content:"🗎";position:absolute;left:-1px;top:-4px;font-size:16px}
-    .nav-icon.user{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.8)}
-    .nav-icon.user::before{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.8);left:4px;top:2px}
-    .nav-icon.user::after{content:"";position:absolute;width:10px;height:5px;border-radius:8px 8px 3px 3px;background:rgba(255,255,255,.8);left:2px;bottom:2px}
-
-    .welcome-chip{
-      background:rgba(255,255,255,.12);
-      padding:10px 14px;
-      border-radius:10px;
-      display:flex;align-items:center;gap:10px
-    }
-
-    .sidebar{
-      grid-row:2;grid-column:1;
-      background:#f3f4f5;
-      border-right:1px solid #e2e2e2;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .sidebar-inner{padding:8px 10px 0 10px;height:100%}
-
-    .search-wrap{display:flex;align-items:center;margin:0 12px 18px 74px}
-    .search{
-      flex:1;height:40px;border:1px solid #3a9867;border-right:none;border-radius:8px 0 0 8px;
-      padding:0 12px;font-size:15px;background:#fff;color:#666
-    }
-    .refresh{
-      width:42px;height:40px;background:#1d8a50;color:#fff;border-radius:0 8px 8px 0;
-      display:flex;align-items:center;justify-content:center;font-size:22px
-    }
-
-    .menu-section{margin:0 12px 16px 12px}
-    .menu-head{
-      height:38px;border-radius:6px;background:#dde8e3;color:#4f5860;
-      display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-size:14px;font-weight:500
-    }
-    .menu-head .left{display:flex;align-items:center;gap:10px}
-    .folder{width:14px;height:11px;border:1.8px solid #6a7077;border-radius:2px;position:relative}
-    .folder::before{content:"";position:absolute;width:7px;height:3px;border:1.8px solid #6a7077;border-bottom:none;border-radius:2px 2px 0 0;left:1px;top:-5px;background:#dde8e3}
-    .caret{width:9px;height:9px;border-right:1.8px solid #798187;border-bottom:1.8px solid #798187;transform:rotate(45deg);margin-top:-4px}
-
-    .submenu{padding:8px 0 0 16px}
-    .submenu-item{
-      display:flex;align-items:center;gap:12px;padding:11px 0;color:#57606a;font-size:15px
-    }
-    .submenu-item .arrow{color:#52a36d;font-size:22px;line-height:1;margin-top:-2px}
-
-    .scroll-rail{
-      position:absolute;right:0;top:0;bottom:0;width:14px;background:linear-gradient(#f0f0f0,#ebebeb);
-      border-left:1px solid #e1e1e1
-    }
-    .scroll-thumb{position:absolute;right:3px;top:56px;width:8px;height:84px;border-radius:7px;background:#9a9a9a}
-    .scroll-arrow-top,.scroll-arrow-bottom,.scroll-arrow-left,.scroll-arrow-right{
-      position:absolute;color:#8b8b8b;font-size:16px;line-height:1
-    }
-    .scroll-arrow-top{right:2px;top:6px}
-    .scroll-arrow-bottom{right:2px;bottom:18px}
-    .scroll-arrow-left{left:8px;bottom:62px}
-    .scroll-arrow-right{right:24px;bottom:62px}
-
-    .main{
-      grid-row:2;grid-column:2;background:#f7f7f7;padding:10px 12px 0 12px;overflow:hidden
-    }
-
-    .tabline{height:42px;border-bottom:1px solid #dedede;display:flex;align-items:flex-end;padding-left:0}
-    .tab{
-      background:#fff;border:1px solid #e1e1e1;border-bottom-color:#fff;border-radius:8px 8px 0 0;
-      padding:12px 18px 11px;font-style:italic;font-weight:700;color:#3d5a43;box-shadow:0 -1px 0 #f8f8f8 inset
-    }
-
-    .section-label{
-      height:48px;display:flex;align-items:center;gap:10px;color:#4a4f57;font-size:15px;margin-top:10px;border-bottom:2px solid #278d5b
-    }
-    .section-label .icon{width:16px;height:20px;border:2px solid #585d63;border-radius:3px;position:relative}
-    .section-label .icon::before{content:"";position:absolute;left:4px;top:3px;width:4px;height:4px;border-radius:50%;background:#585d63}
-    .section-label .icon::after{content:"";position:absolute;left:3px;bottom:3px;width:8px;height:5px;border:2px solid #585d63;border-top:none;border-radius:0 0 6px 6px}
-
-    .card{
-      background:var(--panel);border:1px solid #dddddd;border-radius:7px;box-shadow:0 1px 1px rgba(0,0,0,.03);
-    }
-
-    .profile-card{margin-top:17px;padding:34px 28px 24px 28px;display:grid;grid-template-columns:245px 1fr;column-gap:32px}
-
-    .profile-photo-wrap{display:flex;justify-content:center;align-items:flex-start}
-    .avatar-ring{
-      width:150px;height:150px;border-radius:50%;border:3px solid #3b9a6a;padding:6px;position:relative;background:#fff
-    }
-    .avatar{
-      width:100%;height:100%;border-radius:50%;
-      background:linear-gradient(180deg,#9f9f9f 0 16%, #2b2b2b 16% 28%, #6e4c3d 28% 58%, #d6b6a5 58% 76%, #1e1e1e 76% 100%);
-      position:relative;overflow:hidden;border:1px solid #7d7d7d
-    }
-    .avatar::before{content:"";position:absolute;left:32px;top:16px;width:62px;height:62px;border-radius:50%;background:#5f3e2e;box-shadow:0 25px 0 12px #d2a78d}
-    .avatar::after{content:"";position:absolute;left:40px;bottom:0;width:48px;height:56px;background:#fff;clip-path:polygon(50% 8%,100% 100%,0 100%)}
-    .camera{
-      position:absolute;right:2px;bottom:12px;width:36px;height:36px;border-radius:50%;background:#24a15d;border:4px solid #fff;
-      box-shadow:0 2px 3px rgba(0,0,0,.12)
-    }
-    .camera::before{content:"";position:absolute;left:10px;top:11px;width:14px;height:10px;border-radius:2px;background:#fff}
-    .camera::after{content:"";position:absolute;left:16px;top:14px;width:4px;height:4px;border-radius:50%;background:#24a15d;box-shadow:0 0 0 2px #fff}
-
-    .profile-grid{display:grid;grid-template-columns:1fr 1fr 1fr;column-gap:38px;row-gap:22px;padding-top:1px}
-
-    .field .label{font-size:13px;font-weight:700;color:#3f454d;display:flex;align-items:center;gap:9px;margin-bottom:6px}
-    .field .value{font-size:14px;color:#666b72;line-height:1.2}
-
-    .mini-ico{width:17px;height:17px;position:relative;color:#4c5259;flex:0 0 auto}
-    .doc::before{content:"";position:absolute;inset:1px 2px;border:2px solid #5c6167;border-radius:2px}
-    .doc::after{content:"";position:absolute;right:3px;top:1px;width:5px;height:5px;border-top:2px solid #5c6167;border-right:2px solid #5c6167}
-    .num::before{content:"";position:absolute;left:1px;right:1px;top:3px;height:2px;background:#5c6167;box-shadow:0 4px 0 #5c6167,0 8px 0 #5c6167}
-    .user::before{content:"";position:absolute;left:5px;top:1px;width:6px;height:6px;border-radius:50%;border:2px solid #5c6167}
-    .user::after{content:"";position:absolute;left:2px;bottom:1px;width:12px;height:7px;border:2px solid #5c6167;border-top:none;border-radius:0 0 8px 8px}
-    .mail::before{content:"✉";position:absolute;left:0;top:-1px;font-size:17px;color:#5c6167}
-    .calendar::before{content:"";position:absolute;left:1px;top:2px;width:13px;height:12px;border:2px solid #5c6167;border-radius:2px}
-    .calendar::after{content:"";position:absolute;left:3px;top:5px;width:9px;height:2px;background:#5c6167;box-shadow:0 4px 0 #5c6167}
-    .phone::before{content:"";position:absolute;left:2px;top:2px;width:12px;height:12px;border:2px solid #5c6167;border-right-color:transparent;border-top-color:transparent;border-radius:0 0 0 10px;transform:rotate(-45deg)}
-    .group::before{content:"";position:absolute;left:1px;top:2px;width:5px;height:5px;border-radius:50%;border:2px solid #5c6167;box-shadow:8px 0 0 0 transparent, 8px 0 0 0 #fff}
-    .group::after{content:"";position:absolute;left:0;bottom:1px;width:15px;height:7px;border:2px solid #5c6167;border-top:none;border-radius:0 0 8px 8px}
-
-    .section2{margin-top:29px}
-    .section2 .section-label{margin-top:0}
-    .cap-ico{width:16px;height:16px;position:relative}
-    .cap-ico::before{content:"";position:absolute;left:0;right:0;top:4px;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:6px solid #5c6167}
-    .cap-ico::after{content:"";position:absolute;left:6px;top:9px;width:4px;height:5px;background:#5c6167}
-
-    .degree-tab-wrap{display:flex;align-items:center;gap:16px;margin-top:39px}
-    .degree-tab{
-      width:188px;height:34px;border-radius:4px;background:#158948;color:#fff;font-weight:700;font-size:14px;
-      display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)
-    }
-    .degree-line{height:2px;background:#9db8a8;flex:1}
-
-    .program-card{margin-top:25px;padding:12px 14px 13px}
-    .program-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
-    .program-meta{font-size:14px;font-weight:700;color:#5e636a;line-height:1.45}
-    .program-name{font-size:27px;font-weight:800;letter-spacing:.1px;color:#40454c;margin-top:2px;transform:scaleY(.98);transform-origin:left top}
-    .status{background:#c8dcf5;color:#4e87cf;font-size:12px;font-weight:700;padding:7px 12px;border-radius:7px}
-
-    .stats{display:grid;grid-template-columns:1fr 1fr 383px;gap:8px}
-    .stat{
-      border:1px solid #dddddd;border-radius:6px;background:#f8f8f8;padding:9px 10px 8px
-    }
-    .stat .st-label{font-size:13px;font-weight:700;color:#666}
-    .stat .st-value{margin-top:4px;font-size:16px;color:#42464d;display:flex;align-items:center;gap:8px;font-weight:600}
-    .starv,.tagv,.bulbv{width:14px;height:14px;position:relative}
-    .starv::before{content:"★";position:absolute;left:0;top:-2px;color:#4f5660;font-size:15px}
-    .bulbv::before{content:"💡";position:absolute;left:-1px;top:-3px;font-size:15px;filter:grayscale(1)}
-    .tagv::before{content:"🏷";position:absolute;left:-1px;top:-3px;font-size:14px;filter:grayscale(1)}
-
-    .h-scroll{margin-top:18px;height:8px;background:#9b9b9b;border-radius:10px;position:relative}
-    .h-scroll::before,.h-scroll::after{content:"◀";position:absolute;top:-6px;color:#8d8d8d;font-size:14px}
-    .h-scroll::before{left:-14px}.h-scroll::after{content:"▶";right:-14px}
-
-    .footer-left{
-      grid-column:1;grid-row:3;background:#f7f7f7;border-top:1px solid #dedede;display:flex;align-items:center;padding:0 18px;color:#737983;font-size:14px;gap:12px
-    }
-    .link-icon{font-size:18px;opacity:.8}
-    .footer-right{
-      grid-column:2;grid-row:3;background:#f7f7f7;border-top:1px solid #dedede;display:flex;align-items:center;justify-content:flex-end;padding:0 34px;color:#767c84;font-size:15px
-    }
-    .link{
-  text-decoration: none;
-  color: inherit;
-}
-
-.link:hover{
-  color: #138b4d;
-}
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniMatch · Módulo académico</title>
+  <link rel="stylesheet" href="css/app.css">
 </head>
-<script src="js/auth.js"></script>
-<script>
-  verificarSesion();
-</script>
-<body>
-  <div class="window">
-    <div class="app">
-      <div class="topbar">
-        <div class="brand">
-          <div class="logo"></div>
-          <div class="title">Academusoft Académico 5.0 - Creador De Oportunidades</div>
-        </div>
+<body data-page="academico">
+    <div data-app-shell="header"></div>
 
-        <div class="navtop">
-          <div class="nav-item"><span class="nav-icon home"></span><span>Inicio</span></div>
-          <div class="nav-item"><span class="nav-icon columns"></span><span>Vista Clásica</span></div>
-          <div class="nav-item"><span class="nav-icon lang"></span><span>Idioma</span></div>
-          <div class="welcome-chip"><span class="nav-icon user"></span><span>Bienvenido, John Coronado</span></div>
-        </div>
+  <main class="page-main">
+    <section class="page-header">
+      <h1 class="page-title">Módulo académico complementario</h1>
+      <p class="page-subtitle">Esta vista resume el alcance real del proyecto: fortalecer la inscripción, la cancelación y el manejo de solicitudes como una capa adicional sobre una plataforma académica ya existente.</p>
+    </section>
+
+    <section class="hero hero-clean hero-academico">
+      <div>
+        <span class="hero-badge">Resumen funcional</span>
+        <h1>El módulo académico complementario concentra lo nuevo sin competir con la plataforma base.</h1>
+        <p>Su valor está en resolver inscripciones, cancelaciones y solicitudes con una interfaz más clara, consistente y rápida de revisar durante la demostración.</p>
       </div>
-
-      <aside class="sidebar">
-        <div class="sidebar-inner">
-          <div class="search-wrap">
-            <input class="search" placeholder="Buscar..." />
-            <div class="refresh">◌</div>
-          </div>
-
-          <div class="menu-section">
-            <div class="menu-head">
-              <div class="left"><span class="folder"></span><span>Hoja De Vida</span></div>
-              <span class="caret"></span>
-            </div>
-            <div class="submenu">
-              <div class="submenu-item"><span class="arrow">→</span><span>Matrícula En Línea</span></div>
-              <div class="submenu-item"><span class="arrow">→</span><span>Consultar Matrícula</span></div>
-              <div class="submenu-item"><span class="arrow">→</span><span>Horario</span></div>
-              <div class="submenu-item"><span class="arrow">→</span><a href="materias.html" class="link">Materias y matrícula</a></div>
-            </div>
-          </div>
-
-          <div class="menu-section" style="margin-top:8px;">
-            <div class="menu-head">
-              <div class="left"><span class="folder"></span><span>Calificaciones</span></div>
-              <span class="caret"></span>
-            </div>
-            <div class="submenu">
-              <div class="submenu-item"><span class="arrow">→</span><span>Consultar Ruta De Aprendizaje</span></div>
-              <div class="submenu-item"><span class="arrow">→</span><span>Pago Liquidación En Línea</span></div>
-            </div>
-          </div>
-          <div class="menu-section" style="margin-top:8px;">
-  <div class="menu-head">
-    <div class="left"><span class="folder"></span><span>Solicitudes</span></div>
-    <span class="caret"></span>
-  </div>
-
-  <div class="submenu">
-    <div class="submenu-item">
-      <span class="arrow">→</span>
-      <a href="consultar_solicitudes.html" class="link">Consultar Solicitudes</a>
-    </div>
-
-    <div class="submenu-item">
-      <span class="arrow">→</span>
-      <a href="crear_solicitud.html" class="link">Crear Solicitud</a>
-    </div>
-  <div class="submenu-item">
-    <span class="arrow">→</span>
-    <a href="mis_materias.html" class="link">Mis Materias</a>
-   
-  </div>
-  <div class="submenu-item">
-    <span class="arrow">→</span>
-    <a href="materias.html" class="link">Materias Disponibles</a>
-   
-  </div>
-</div>
-
-        </div>
-        
-
-        <div class="scroll-rail">
-          <div class="scroll-arrow-top">▲</div>
-          <div class="scroll-thumb"></div>
-          <div class="scroll-arrow-bottom">▼</div>
-        </div>
-        <div class="scroll-arrow-left">◀</div>
-        <div class="scroll-arrow-right">▶</div>
+      <aside class="hero-aside">
+        <h3>Enfoque de esta versión</h3>
+        <ul>
+          <li>Navegación global fija en la parte superior.</li>
+          <li>Vistas sin botones repetidos ni ruido visual.</li>
+          <li>Componentes listos para escalar a nuevas funciones.</li>
+        </ul>
       </aside>
+    </section>
 
-      <main class="main">
-        <div class="tabline">
-          <div class="tab">Inicio</div>
+    <section class="overview-strip overview-strip-3">
+      <article class="overview-item">
+        <span>Operación</span>
+        <strong>Directa</strong>
+        <small>Inscripción y cancelación</small>
+      </article>
+      <article class="overview-item">
+        <span>Control</span>
+        <strong>Con trazabilidad</strong>
+        <small>Peticiones y seguimiento</small>
+      </article>
+      <article class="overview-item">
+        <span>Experiencia</span>
+        <strong>Sin duplicidad</strong>
+        <small>Menú fijo y vistas limpias</small>
+      </article>
+    </section>
+
+    <section class="grid-2">
+      <article class="page-card">
+        <h2>Funciones directas</h2>
+        <p>Las nuevas inscripciones y las cancelaciones se ejecutan de inmediato cuando cumplen las reglas de negocio. Esto reduce pasos innecesarios y deja las peticiones sólo para los casos que sí necesitan evaluación.</p>
+        <div class="mini-list">
+          <span class="mini-chip">Inscripción con validación</span>
+          <span class="mini-chip">Cancelación directa</span>
         </div>
+      </article>
 
-        <div class="section-label">
-          <span class="icon"></span>
-          <span>Datos Personales</span>
+      <article class="page-card">
+        <h2>Funciones con solicitud</h2>
+        <p>Los cambios de grupo y de materia se mantienen como peticiones pendientes para que el flujo conserve trazabilidad y pueda integrarse con reglas posteriores de revisión o permuta.</p>
+        <div class="mini-list">
+          <span class="mini-chip">Cambio de grupo</span>
+          <span class="mini-chip">Cambio de materia</span>
         </div>
+      </article>
+    </section>
 
-        <div class="card profile-card">
-          <div class="profile-photo-wrap">
-            <div class="avatar-ring">
-              <div class="avatar"></div>
-              <div class="camera"></div>
-            </div>
-          </div>
+    <section class="grid-3 mt-18">
+      <article class="info-card">
+        <h3>Navegación fija</h3>
+        <p>El encabezado superior permanece visible y separa claramente la navegación del contenido editable.</p>
+      </article>
+      <article class="info-card">
+        <h3>Lenguaje claro</h3>
+        <p>Los textos se simplificaron para que cada acción comunique exactamente qué ocurre en el sistema.</p>
+      </article>
+      <article class="info-card">
+        <h3>Escalabilidad visual</h3>
+        <p>La nueva base CSS deja listas tarjetas, tablas, formularios y estados reutilizables para otras vistas.</p>
+      </article>
+    </section>
+  </main>
 
-          <div class="profile-grid">
-            <div class="field">
-              <div class="label"><span class="mini-ico doc"></span>Tipo de Documento</div>
-              <div class="value">CC</div>
-            </div>
-            <div class="field">
-              <div class="label"><span class="mini-ico num"></span>Número de Documento</div>
-              <div class="value">1002366859</div>
-            </div>
-            <div class="field">
-              <div class="label"><span class="mini-ico user"></span>Nombres</div>
-              <div class="value">JOHN SEBASTIAN</div>
-            </div>
-
-            <div class="field">
-              <div class="label"><span class="mini-ico user"></span>Apellidos</div>
-              <div class="value">CORONADO CARO</div>
-            </div>
-            <div class="field">
-              <div class="label"><span class="mini-ico mail"></span>E-mail Institucional</div>
-              <div class="value">jsebastiancoronado@ucundinamarca.edu.co</div>
-            </div>
-            <div class="field">
-              <div class="label"><span class="mini-ico calendar"></span>Fecha de Nacimiento</div>
-              <div class="value">07/03/2002</div>
-            </div>
-
-            <div class="field">
-              <div class="label"><span class="mini-ico phone"></span>Teléfono</div>
-              <div class="value">3142250733</div>
-            </div>
-            <div class="field">
-              <div class="label"><span class="mini-ico group"></span>Estado Civil</div>
-              <div class="value">Soltero</div>
-            </div>
-            <div></div>
-          </div>
-        </div>
-
-        <div class="section2">
-          <div class="section-label">
-            <span class="cap-ico"></span>
-            <span>Programas Académicos</span>
-          </div>
-
-          <div class="degree-tab-wrap">
-            <div class="degree-tab">PREGRADO</div>
-            <div class="degree-line"></div>
-          </div>
-
-          <div class="card program-card">
-            <div class="program-top">
-              <div>
-                <div class="program-meta">PROGRAMA</div>
-                <div class="program-name">INGENIERÍA DE SISTEMAS Y COMPUTACIÓN 2020 - FACATATIVÁ</div>
-              </div>
-              <div class="status">ACTIVO</div>
-            </div>
-
-            <div class="stats">
-              <div class="stat">
-                <div class="st-label">PROMEDIO SEMESTRE</div>
-                <div class="st-value"><span class="starv"></span>4.2</div>
-              </div>
-              <div class="stat">
-                <div class="st-label">PROMEDIO GENERAL</div>
-                <div class="st-value"><span class="bulbv"></span>4.0</div>
-              </div>
-              <div class="stat">
-                <div class="st-label">PROGRAMA CATEGORIA</div>
-                <div class="st-value"><span class="tagv"></span>ANTIGUO</div>
-              </div>
-            </div>
-
-            <div class="h-scroll"></div>
-          </div>
-        </div>
-      </main>
-
-      <div class="footer-left"><span class="link-icon">◦</span><span>Unicundinamarca</span></div>
-      <div class="footer-right">© 2026 Centro De Investigación Y Desarrollo En Tecnologías Aplicadas</div>
-    </div>
-  </div>
-</body>
+  <div data-app-shell="footer"></div>
+  <script src="js/auth.js"></script>
+  <script src="js/app-ui.js"></script>
+  <script src="js/app-shell.js"></script>
+  <script src="js/app-init.js"></script>
+  </body>
 </html>
