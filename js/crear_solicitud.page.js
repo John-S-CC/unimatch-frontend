@@ -14,7 +14,6 @@
   const bloqueOrigen = document.getElementById("bloque_origen");
   const bloqueDestino = document.getElementById("bloque_destino");
   const resumenTexto = document.getElementById("resumen_texto");
-  const actions = document.querySelector(".actions");
 
   const params = new URLSearchParams(window.location.search);
   const tipoPre = params.get("tipo_solicitud");
@@ -28,7 +27,7 @@
 
   function mostrarMensaje(texto, tipoClase) {
     mensaje.textContent = texto;
-    mensaje.className = `msg ${tipoClase}`;
+    mensaje.className = `msg show ${tipoClase}`;
   }
 
   function limpiarMensaje() {
@@ -131,6 +130,7 @@
     limpiarMensaje();
 
     try {
+      if (typeof showGlobalLoader === 'function') showGlobalLoader('Preparando las opciones de origen y destino para tu solicitud.', 'Cargando formulario');
       const data = await obtenerOpcionesSolicitud();
 
       if (!data.ok) {
@@ -152,6 +152,9 @@
     } catch (error) {
       console.error(error);
       mostrarMensaje("Error de conexión con el servidor.", "error");
+      if (typeof showToast === "function") showToast("Error de conexión con el servidor.", "error");
+    } finally {
+      if (typeof hideGlobalLoader === 'function') hideGlobalLoader();
     }
   }
 
@@ -180,6 +183,7 @@
     const payload = construirPayload();
 
     try {
+      if (typeof showGlobalLoader === 'function') showGlobalLoader('Estamos validando y registrando la petición.', 'Procesando solicitud');
       const data = await crearSolicitud(payload);
 
       if (!data.ok) {
@@ -187,7 +191,9 @@
         return;
       }
 
-      mostrarMensaje(data.mensaje || "Solicitud guardada correctamente.", "ok");
+      const texto = data.mensaje || "Solicitud guardada correctamente.";
+      mostrarMensaje(texto, "ok");
+      if (typeof showToast === "function") showToast(texto, data.directa ? "success" : "info");
       form.reset();
       tipo.value = "";
       resetSelect(origenSelect, "Seleccione...");
@@ -198,25 +204,11 @@
     } catch (error) {
       console.error(error);
       mostrarMensaje("Error de conexión con el servidor.", "error");
+      if (typeof showToast === "function") showToast("Error de conexión con el servidor.", "error");
+    } finally {
+      if (typeof hideGlobalLoader === 'function') hideGlobalLoader();
     }
   }
-
-  actions.addEventListener("click", (event) => {
-    const button = event.target.closest("button[data-action]");
-    if (!button) {
-      return;
-    }
-
-    const action = button.dataset.action;
-
-    if (action === "go-mis-materias") {
-      window.location.href = "mis_materias.html";
-    } else if (action === "go-solicitudes") {
-      window.location.href = "consultar_solicitudes.html";
-    } else if (action === "logout") {
-      cerrarSesion();
-    }
-  });
 
   tipo.addEventListener("change", () => {
     limpiarMensaje();

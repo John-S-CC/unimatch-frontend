@@ -3,43 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consultar Solicitudes - UniMatch</title>
-  <link rel="stylesheet" href="css/consultar_solicitudes.css">
+  <title>UniMatch · Peticiones</title>
+  <link rel="stylesheet" href="css/app.css">
 </head>
-<body>
-  <div class="container">
-    <h1>Mis solicitudes</h1>
+<body data-page="consultar_solicitudes">
+    <div data-app-shell="header"></div>
 
-    <div class="top-actions">
-      <button class="btn-primary" data-action="new-request">Nueva solicitud</button>
-      <button class="btn-secondary" data-action="logout">Cerrar sesión</button>
-    </div>
+  <main class="page-main">
+    <section class="page-header compact-header">
+      <div>
+        <h1 class="page-title">Peticiones y seguimiento</h1>
+        <p class="page-subtitle">La tabla está paginada para evitar desplazamientos largos y mantener visible la información importante del proceso.</p>
+      </div>
+      <span class="page-chip">Historial paginado</span>
+    </section>
 
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Tipo</th>
-          <th>Grupo origen</th>
-          <th>Grupo destino</th>
-          <th>Materia origen</th>
-          <th>Materia destino</th>
-          <th>Estado</th>
-          <th>Fecha</th>
-        </tr>
-      </thead>
-      <tbody id="tabla_solicitudes">
-        <tr>
-          <td colspan="8">Cargando solicitudes...</td>
-        </tr>
-      </tbody>
-    </table>
+    <section class="overview-strip overview-strip-3">
+      <article class="overview-item">
+        <span>Visualización</span>
+        <strong>Paginada</strong>
+        <small>Menos desplazamiento vertical</small>
+      </article>
+      <article class="overview-item">
+        <span>Búsqueda</span>
+        <strong>Rápida</strong>
+        <small>Filtra por estado, grupo o fecha</small>
+      </article>
+      <article class="overview-item">
+        <span>Seguimiento</span>
+        <strong>Centralizado</strong>
+        <small>Todas tus solicitudes en un solo lugar</small>
+      </article>
+    </section>
 
-    <div id="mensaje" class="msg"></div>
-  </div>
+    <section class="table-card">
+      <div class="table-meta">
+        <div>
+          <h2 class="mb-0">Historial de solicitudes</h2>
+          <p class="mb-0">Filtra por cualquier texto para ubicar un caso más rápido.</p>
+        </div>
+      </div>
 
+      <input id="filtroSolicitudes" class="table-filter" type="search" placeholder="Filtrar por tipo, estado, fecha, grupo o materia">
+
+      <div class="table-wrap mt-16">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tipo</th>
+              <th>Grupo origen</th>
+              <th>Grupo destino</th>
+              <th>Materia origen</th>
+              <th>Materia destino</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody id="tabla_solicitudes">
+            <tr><td colspan="8">Cargando solicitudes...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <div id="paginationInfo" class="footer-note">Mostrando resultados...</div>
+        <div id="paginationControls" class="pagination-controls"></div>
+      </div>
+
+      <div id="mensaje" class="msg" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <div data-app-shell="footer"></div>
   <script src="js/auth.js"></script>
+  <script src="js/app-ui.js"></script>
+  <script src="js/app-shell.js"></script>
+  <script src="js/app-init.js"></script>
   <script src="js/api.js"></script>
   <script src="js/consultar_solicitudes.page.js"></script>
-</body>
+  </body>
 </html>
