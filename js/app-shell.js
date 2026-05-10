@@ -11,6 +11,10 @@
     }
   }
 
+  function isAdminRole(rol) {
+    return ['admin', 'administrador', 'root'].includes(String(rol || '').toLowerCase());
+  }
+
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, (char) => ({
       '&': '&amp;',
@@ -27,21 +31,13 @@
   }
 
   function getApiCandidates() {
-    const candidates = [
-      window.API_BASE,
-      localStorage.getItem('api_base')
-    ];
+    const candidates = [window.API_BASE, localStorage.getItem('api_base')];
 
     if (window.location?.origin?.startsWith('http')) {
-      candidates.push(`${window.location.origin}/api/`);
-      candidates.push(`${window.location.origin}/unimatch-backend/api/`);
+      candidates.push(`${window.location.origin}/api/`);      
     }
 
-    candidates.push(
-      'http://localhost:8000/api/',
-      'http://localhost:8000/unimatch-backend/api/'
-    );
-
+    candidates.push('http://localhost:8000/api/');
     return [...new Set(candidates.map(normalizeBase).filter(Boolean))];
   }
 
@@ -77,13 +73,23 @@
   }
 
   function navItems(currentPage) {
+    const usuario = getUsuario();
+    const isAdmin = isAdminRole(usuario?.rol);
+
+    if (isAdmin) {
+      return [
+        { href: 'admin_dashboard.html', label: 'Panel admin', page: 'admin_dashboard', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 13h8V3H3zM13 21h8v-6h-8zM13 10h8V3h-8zM3 21h8v-6H3z"/></svg>' }
+      ].map(item => ({ ...item, active: item.page === currentPage }));
+    }
+
     return [
       { href: 'dashboard.html', label: 'Inicio', page: 'dashboard', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10.5V20h14v-9.5"/></svg>' },
       { href: 'academico.html', label: 'Módulo académico', page: 'academico', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v12H4z"/><path d="M9 6v12"/><path d="M14 10h3"/><path d="M14 14h3"/></svg>' },
       { href: 'materias.html', label: 'Inscripciones', page: 'materias', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4"/><path d="M9 13h6"/><path d="M12 10v6"/></svg>' },
       { href: 'mis_materias.html', label: 'Mis materias', page: 'mis_materias', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v12H4z"/><path d="M8 10h8"/><path d="M8 14h5"/></svg>' },
       { href: 'crear_solicitud.html', label: 'Crear solicitud', page: 'crear_solicitud', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>' },
-      { href: 'consultar_solicitudes.html', label: 'Peticiones', page: 'consultar_solicitudes', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4h10v16H7z"/><path d="M9.5 9h5"/><path d="M9.5 13h5"/></svg>' }
+      { href: 'consultar_solicitudes.html', label: 'Peticiones', page: 'consultar_solicitudes', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4h10v16H7z"/><path d="M9.5 9h5"/><path d="M9.5 13h5"/></svg>' },
+      { href: 'turnos.html', label: 'Turnos', page: 'turnos', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h11"/><path d="M8 12h11"/><path d="M8 18h11"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>' }
     ].map(item => ({ ...item, active: item.page === currentPage }));
   }
 
@@ -91,6 +97,8 @@
     const usuario = getUsuario();
     const name = usuario?.nombre || 'Estudiante';
     const role = usuario?.rol || 'Usuario activo';
+    const isAdmin = isAdminRole(role);
+    const homeHref = isAdmin ? 'admin_dashboard.html' : 'dashboard.html';
     const links = navItems(currentPage).map(item => `
       <a class="nav-link${item.active ? ' is-active' : ''}" href="${item.href}" aria-current="${item.active ? 'page' : 'false'}">
         ${item.icon}
@@ -103,20 +111,20 @@
         <div class="top-utility">
           <div class="top-utility-inner">
             <div class="top-utility-badges">
-              <span class="utility-pill"><span class="utility-dot"></span> Extensión Facatativá</span>
-              <span class="utility-pill">UniMatch · módulo complementario</span>
+              <span class="utility-pill"><span class="utility-dot"></span> ${escapeHtml(usuario?.extension || 'Extensión Facatativá')}</span>
+              <span class="utility-pill">UniMatch · ${isAdmin ? 'panel administrativo' : 'módulo complementario'}</span>
             </div>
             <span class="footer-note">Diseño orientado a claridad, contraste y navegación institucional.</span>
           </div>
         </div>
         <div class="main-header">
           <div class="main-header-inner">
-            <a class="brand-link" href="dashboard.html" aria-label="Ir al inicio del módulo UniMatch">
+            <a class="brand-link" href="${homeHref}" aria-label="Ir al inicio del módulo UniMatch">
               <img class="brand-mark" src="img/logo-ucundinamarca.png" alt="Escudo de la Universidad de Cundinamarca" />
               <div class="brand-text">
-                <span class="brand-eyebrow">Extensión Facatativá</span>
+                <span class="brand-eyebrow">${escapeHtml(usuario?.extension || 'Extensión Facatativá')}</span>
                 <h1 class="brand-title">Universidad de Cundinamarca</h1>
-                <span class="brand-subtitle">UniMatch · módulo académico complementario</span>
+                <span class="brand-subtitle">UniMatch · ${isAdmin ? 'gestión administrativa de turnos' : 'módulo académico complementario'}</span>
               </div>
             </a>
             <div class="header-utilities">
@@ -125,7 +133,7 @@
                 <span class="notify-badge" id="headerNotifyBadge" hidden>0</span>
               </button>
 
-              <div class="header-dropdown notifications-menu" id="headerNotifications" role="menu" aria-label="Notificaciones del estudiante">
+              <div class="header-dropdown notifications-menu" id="headerNotifications" role="menu" aria-label="Notificaciones del módulo">
                 <div class="dropdown-heading">
                   <div>
                     <strong>Notificaciones</strong>
@@ -133,16 +141,16 @@
                   </div>
                   <span class="dropdown-counter" id="headerNotifyCounter">0</span>
                 </div>
-                  <div class="dropdown-list" id="headerNotifyList">
-                    <div class="dropdown-empty">Estamos preparando tus alertas académicas.</div>
-                  </div>
-                  <div class="dropdown-footer">
-                    <a href="consultar_solicitudes.html">Ver peticiones</a>
-                  </div>
+                <div class="dropdown-list" id="headerNotifyList">
+                  <div class="dropdown-empty">Estamos preparando tus alertas.</div>
+                </div>
+                <div class="dropdown-footer">
+                  <a href="${isAdmin ? 'admin_dashboard.html' : 'consultar_solicitudes.html'}">Ver detalle</a>
+                </div>
               </div>
 
               <div class="user-menu" id="userMenu">
-                <button type="button" class="user-menu-trigger" data-shell-action="toggle-user-menu" aria-expanded="false" aria-controls="headerUserMenu" aria-label="Abrir menú del estudiante">
+                <button type="button" class="user-menu-trigger" data-shell-action="toggle-user-menu" aria-expanded="false" aria-controls="headerUserMenu" aria-label="Abrir menú del usuario">
                   <div class="user-avatar">${initials(name)}</div>
                   <div class="user-meta">
                     <small>Sesión activa</small>
@@ -152,7 +160,7 @@
                   <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
 
-                <div class="header-dropdown user-dropdown" id="headerUserMenu" role="menu" aria-label="Menú del estudiante">
+                <div class="header-dropdown user-dropdown" id="headerUserMenu" role="menu" aria-label="Menú del usuario">
                   <div class="dropdown-user-card">
                     <div class="user-avatar large">${initials(name)}</div>
                     <div>
@@ -161,18 +169,25 @@
                     </div>
                   </div>
                   <div class="dropdown-list compact">
-                    <a class="dropdown-link" href="dashboard.html">
-                      <span>Inicio</span>
-                      <small>Resumen del día y agenda actual</small>
-                    </a>
-                    <a class="dropdown-link" href="mis_materias.html">
-                      <span>Mi horario y materias</span>
-                      <small>Consulta tus bloques activos</small>
-                    </a>
-                    <a class="dropdown-link" href="consultar_solicitudes.html">
-                      <span>Estado de peticiones</span>
-                      <small>Revisa cambios, cancelaciones y novedades</small>
-                    </a>
+                    ${isAdmin ? `
+                      <a class="dropdown-link" href="admin_dashboard.html">
+                        <span>Panel administrativo</span>
+                        <small>Métricas, turnos y trazabilidad</small>
+                      </a>
+                    ` : `
+                      <a class="dropdown-link" href="dashboard.html">
+                        <span>Inicio</span>
+                        <small>Resumen del día y agenda actual</small>
+                      </a>
+                      <a class="dropdown-link" href="mis_materias.html">
+                        <span>Mi horario y materias</span>
+                        <small>Consulta tus bloques activos</small>
+                      </a>
+                      <a class="dropdown-link" href="turnos.html">
+                        <span>Mis turnos</span>
+                        <small>Genera y consulta tus turnos</small>
+                      </a>
+                    `}
                   </div>
                   <div class="dropdown-footer user-dropdown-footer">
                     <button type="button" class="dropdown-danger" data-shell-action="logout">Cerrar sesión</button>
@@ -190,7 +205,7 @@
             </button>
             <div class="nav-links" id="mainNavLinks">${links}</div>
             <div class="nav-actions">
-              <span class="nav-notice">Portal activo</span>
+              <span class="nav-notice">${isAdmin ? 'Gestión activa' : 'Portal activo'}</span>
             </div>
           </div>
         </nav>
@@ -204,11 +219,11 @@
         <div class="footer-inner">
           <div>
             <p><strong>UniMatch · Universidad de Cundinamarca</strong></p>
-            <small>Interfaz académica complementaria con navegación superior fija, lenguaje claro y componentes accesibles para la gestión de inscripciones, cancelaciones y solicitudes.</small>
+            <small>Interfaz académica complementaria con navegación superior fija, lenguaje claro y componentes accesibles para la gestión de solicitudes y turnos.</small>
           </div>
           <div>
             <small>www.ucundinamarca.edu.co · Vigilada MinEducación</small>
-            <p class="footer-note">Paleta visual basada en el verde institucional, el complemento de Facatativá y las tipografías sugeridas en el manual institucional.</p>
+            <p class="footer-note">Paleta visual basada en el verde institucional y componentes adaptados por rol.</p>
           </div>
         </div>
       </footer>
@@ -217,14 +232,10 @@
 
   function closeMenus() {
     document.body.classList.remove('nav-open');
-
     const navToggle = document.querySelector('[data-shell-action="toggle-nav"]');
     if (navToggle) navToggle.setAttribute('aria-expanded', 'false');
-
     document.querySelectorAll('.header-dropdown.is-open').forEach(menu => menu.classList.remove('is-open'));
-    document.querySelectorAll('[data-shell-action="toggle-user-menu"], [data-shell-action="toggle-notifications"]').forEach(btn => {
-      btn.setAttribute('aria-expanded', 'false');
-    });
+    document.querySelectorAll('[data-shell-action="toggle-user-menu"], [data-shell-action="toggle-notifications"]').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
   }
 
   function bindShellInteractions() {
@@ -299,75 +310,21 @@
     });
   }
 
-  function buildNotifications(materiasPayload, solicitudesPayload) {
-    const materias = Array.isArray(materiasPayload?.data) ? materiasPayload.data : [];
-    const solicitudes = Array.isArray(solicitudesPayload?.data) ? solicitudesPayload.data : [];
-    const activeRequests = solicitudes.filter(item => ['pendiente', 'procesando', 'permuta'].includes(String(item.estado || '').toLowerCase()));
-    const approved = solicitudes.filter(item => String(item.estado || '').toLowerCase() === 'aprobada');
-
-    const items = [];
-
-    if (activeRequests.length) {
-      items.push({
-        tone: 'warning',
-        title: `${activeRequests.length} petición${activeRequests.length > 1 ? 'es' : ''} activa${activeRequests.length > 1 ? 's' : ''}`,
-        text: 'Tu módulo detectó solicitudes en curso. Revísalas para conocer su estado más reciente.',
-        href: 'consultar_solicitudes.html'
-      });
-    }
-
-    if (materias.length) {
-      items.push({
-        tone: 'success',
-        title: `${materias.length} materia${materias.length > 1 ? 's' : ''} activa${materias.length > 1 ? 's' : ''}`,
-        text: 'Ya puedes consultar tu horario semanal y la agenda del día desde el inicio.',
-        href: 'mis_materias.html'
-      });
-    }
-
-    if (approved.length) {
-      items.push({
-        tone: 'info',
-        title: `${approved.length} novedad${approved.length > 1 ? 'es' : ''} aprobada${approved.length > 1 ? 's' : ''}`,
-        text: 'Se registraron actualizaciones aprobadas en tus movimientos académicos recientes.',
-        href: 'consultar_solicitudes.html'
-      });
-    }
-
-    if (!items.length) {
-      items.push({
-        tone: 'neutral',
-        title: 'Todo al día',
-        text: 'No encontramos alertas nuevas. Puedes seguir navegando por el portal académico.',
-        href: 'dashboard.html'
-      });
-    }
-
-    return {
-      count: activeRequests.length,
-      summary: items.length === 1 && items[0].tone === 'neutral'
-        ? 'Sin alertas pendientes en este momento.'
-        : `${items.length} novedades relevantes para tu seguimiento académico.`,
-      items
-    };
-  }
-
   function renderHeaderNotifications(model) {
     const badge = document.getElementById('headerNotifyBadge');
     const counter = document.getElementById('headerNotifyCounter');
     const meta = document.getElementById('headerNotifyMeta');
     const list = document.getElementById('headerNotifyList');
-
     if (!badge || !counter || !meta || !list) return;
 
     const count = Number(model?.count || 0);
     badge.hidden = count <= 0;
     badge.textContent = String(count);
     counter.textContent = String(count);
-    meta.textContent = model?.summary || 'Novedades del módulo académico.';
+    meta.textContent = model?.summary || 'Novedades del módulo.';
 
     list.innerHTML = (model?.items || []).map(item => `
-      <a class="notification-item tone-${item.tone || 'neutral'}" href="${item.href || 'dashboard.html'}">
+      <a class="notification-item tone-${item.tone || 'neutral'}" href="${item.href || '#'}">
         <span class="notification-dot"></span>
         <div>
           <strong>${escapeHtml(item.title || 'Notificación')}</strong>
@@ -377,24 +334,78 @@
     `).join('');
   }
 
-  async function hydrateHeaderData() {
-    try {
-      const [materiasResponse, solicitudesResponse] = await Promise.all([
-        requestHeaderApi('mis_materias.php'),
-        requestHeaderApi('listar_solicitudes.php')
-      ]);
+  function buildNotificationsFromAdmin(resumen) {
+    const pending = Number(resumen?.turnos_pendientes || 0);
+    const rejected = Number(resumen?.turnos_rechazados || 0);
+    const total = Number(resumen?.total_turnos || 0);
+    const items = [];
 
-      renderHeaderNotifications(buildNotifications(materiasResponse.data, solicitudesResponse.data));
+    if (pending) {
+      items.push({ tone: 'warning', title: `${pending} turno(s) pendientes`, text: 'Hay turnos por revisar desde la cola administrativa.', href: 'admin_dashboard.html' });
+    }
+    if (rejected) {
+      items.push({ tone: 'danger', title: `${rejected} turno(s) rechazados`, text: 'Verifica si requieren trazabilidad o nueva atención.', href: 'admin_dashboard.html' });
+    }
+    if (!items.length) {
+      items.push({ tone: 'neutral', title: 'Sin alertas críticas', text: total ? 'Todos los turnos están al día o ya fueron gestionados.' : 'Aún no hay turnos registrados.', href: 'admin_dashboard.html' });
+    }
+    return {
+      count: pending,
+      summary: `Resumen administrativo de ${total} turno(s) registrados.`,
+      items
+    };
+  }
+
+  function buildNotificationsFromStudent(materiasPayload, solicitudesPayload, turnosPayload) {
+    const materias = Array.isArray(materiasPayload?.data) ? materiasPayload.data : [];
+    const solicitudes = Array.isArray(solicitudesPayload?.data) ? solicitudesPayload.data : [];
+    const turnos = Array.isArray(turnosPayload?.data) ? turnosPayload.data : [];
+    const activeRequests = solicitudes.filter(item => ['pendiente', 'procesando', 'permuta'].includes(String(item.estado || '').toLowerCase()));
+    const pendingTurns = turnos.filter(item => String(item.estado || '').toLowerCase() === 'pendiente');
+    const items = [];
+
+    if (activeRequests.length) {
+      items.push({ tone: 'warning', title: `${activeRequests.length} petición(es) activa(s)`, text: 'Tu módulo detectó solicitudes en curso.', href: 'consultar_solicitudes.html' });
+    }
+    if (pendingTurns.length) {
+      items.push({ tone: 'info', title: `${pendingTurns.length} turno(s) pendiente(s)`, text: 'Ya generaste turnos que siguen en espera de gestión.', href: 'turnos.html' });
+    }
+    if (materias.length) {
+      items.push({ tone: 'success', title: `${materias.length} materia(s) activa(s)`, text: 'Tu horario está disponible para consulta.', href: 'mis_materias.html' });
+    }
+    if (!items.length) {
+      items.push({ tone: 'neutral', title: 'Todo al día', text: 'No encontramos alertas nuevas en tu sesión.', href: 'dashboard.html' });
+    }
+
+    return {
+      count: activeRequests.length + pendingTurns.length,
+      summary: `${items.length} novedades relevantes para tu seguimiento académico.`,
+      items
+    };
+  }
+
+  async function hydrateHeaderData() {
+    const usuario = getUsuario();
+    const isAdmin = isAdminRole(usuario?.rol);
+
+    try {
+      if (isAdmin) {
+        const adminResponse = await requestHeaderApi('admin_resumen.php');
+        renderHeaderNotifications(buildNotificationsFromAdmin(adminResponse.data?.resumen || {}));
+        return;
+      }
+
+      const [materiasResponse, solicitudesResponse, turnosResponse] = await Promise.all([
+        requestHeaderApi('mis_materias.php'),
+        requestHeaderApi('listar_solicitudes.php'),
+        requestHeaderApi('listar_turnos.php')
+      ]);
+      renderHeaderNotifications(buildNotificationsFromStudent(materiasResponse.data, solicitudesResponse.data, turnosResponse.data));
     } catch (error) {
       renderHeaderNotifications({
         count: 0,
         summary: 'No fue posible actualizar las alertas del header en este momento.',
-        items: [{
-          tone: 'neutral',
-          title: 'Sincronización pendiente',
-          text: 'El menú seguirá disponible y podrás consultar tus peticiones manualmente cuando lo necesites.',
-          href: 'consultar_solicitudes.html'
-        }]
+        items: [{ tone: 'neutral', title: 'Sincronización pendiente', text: 'El menú seguirá disponible y podrás consultar la información manualmente.', href: isAdmin ? 'admin_dashboard.html' : 'dashboard.html' }]
       });
     }
   }
@@ -404,7 +415,6 @@
     const footerHost = document.querySelector('[data-app-shell="footer"]');
     if (headerHost) headerHost.innerHTML = shellTemplate(currentPage);
     if (footerHost) footerHost.innerHTML = footerTemplate();
-
     bindShellInteractions();
     hydrateHeaderData();
   };
