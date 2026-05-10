@@ -1834,3 +1834,83 @@ header {
   .notifications-menu { right: 12px; width: calc(100vw - 24px); }
   .user-dropdown { right: 12px; width: calc(100vw - 24px); }
 }
+
+
+/* === Fase turnos y panel administrativo === */
+.stack-form { display: grid; gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.field-label { display: grid; gap: 8px; font-weight: 600; color: #1c3d2d; }
+.input-field { width: 100%; border: 1px solid rgba(35, 91, 66, 0.18); border-radius: 14px; padding: 12px 14px; background: #fff; font: inherit; }
+.textarea-field { resize: vertical; min-height: 140px; }
+.actions-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.spotlight-card { background: linear-gradient(180deg, rgba(246,250,247,0.95), rgba(233,244,237,0.95)); }
+.turno-big-code { font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 800; letter-spacing: .04em; color: #114b31; }
+.detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.detail-item { padding: 14px; border-radius: 16px; background: rgba(255,255,255,.78); border: 1px solid rgba(27,84,58,.10); display: grid; gap: 6px; }
+.detail-item span { font-size: .84rem; color: #567061; }
+.detail-item strong { color: #163c2b; }
+.detail-block { padding: 16px; border-radius: 16px; background: rgba(255,255,255,.72); border: 1px solid rgba(27,84,58,.10); }
+.detail-block span { display: block; font-size: .84rem; color: #567061; margin-bottom: 8px; }
+.detail-block p { margin: 0; color: #173627; }
+.danger-soft { border-color: rgba(170, 50, 58, 0.18); color: #8d1f2d; }
+@media (max-width: 860px) { .grid-2, .detail-grid { grid-template-columns: 1fr; } }
+
+
+.portal-grid-balanced {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.admin-form-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-form-grid label {
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+  color: #153b2f;
+}
+
+.admin-form-grid input {
+  border: 1px solid rgba(18, 77, 61, 0.18);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font: inherit;
+  background: #fff;
+}
+
+.admin-inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.table-subcopy {
+  margin-top: 6px;
+  color: #5d7068;
+  font-size: 0.84rem;
+}
+
+.btn-sm {
+  padding: 8px 12px;
+  font-size: 0.88rem;
+}
+
+
+.auth-help {
+  text-align: center;
+  margin: 0.75rem 0 0;
+  font-size: 0.92rem;
+}
+
+.auth-help a {
+  color: var(--brand-primary, #8a1538);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-help a:hover {
+  text-decoration: underline;
+}

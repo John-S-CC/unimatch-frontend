@@ -22,6 +22,11 @@
       return;
     }
 
+    if (!correo.toLowerCase().endsWith('@unimatch.edu.co')) {
+      showMessage('Solo se permite el acceso con correos institucionales @unimatch.edu.co.', 'error');
+      return;
+    }
+
     try {
       if (typeof showGlobalLoader === 'function') showGlobalLoader('Estamos validando tus credenciales institucionales.', 'Iniciando sesión');
       const data = await loginUsuario(correo, password);
@@ -31,13 +36,17 @@
         return;
       }
 
-      localStorage.setItem('usuario', JSON.stringify(data.usuario));
-      localStorage.setItem('token', data.token);
+      if (typeof setSession === 'function') {
+        setSession(data);
+      } else {
+        sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
+        sessionStorage.setItem('token', data.token);
+      }
       showMessage('Inicio de sesión exitoso. Redirigiendo...', 'ok');
 
       setTimeout(() => {
-        window.location.href = 'dashboard.html';
-      }, 500);
+        window.location.href = typeof getHomeByRole === 'function' ? getHomeByRole() : 'dashboard.html';
+      }, 350);
     } catch (error) {
       console.error(error);
       showMessage(error.message || 'Error de conexión con el servidor.', 'error');

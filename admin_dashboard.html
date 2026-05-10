@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniMatch · Panel administrativo</title>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-page="admin_dashboard" data-role-scope="admin">
+  <div data-app-shell="header"></div>
+
+  <main class="page-main">
+    <section class="hero hero-clean hero-dashboard hero-portal">
+      <div>
+        <span class="hero-badge">Panel administrativo</span>
+        <h1>Control de solicitudes, turnos y calendario</h1>
+        <p>Desde esta vista puedes simular la fecha del sistema, cerrar periodos, revisar el historial completo y gestionar la cola de atención.</p>
+      </div>
+      <aside class="hero-aside hero-aside-spotlight portal-hero-card">
+        <span class="portal-mini-label">Estado académico</span>
+        <h3 id="adminQueueHeadline">Consultando configuración vigente</h3>
+        <p id="adminQueueCopy">Las solicitudes pendientes pueden rechazarse automáticamente cuando vence el periodo de permutas.</p>
+      </aside>
+    </section>
+
+    <section class="overview-strip overview-strip-4">
+      <article class="overview-item">
+        <span>Solicitudes totales</span>
+        <strong id="adminTotalSolicitudes">0</strong>
+        <small>Histórico general del módulo</small>
+      </article>
+      <article class="overview-item">
+        <span>Turnos registrados</span>
+        <strong id="adminTotalTurnos">0</strong>
+        <small>Incluye resueltos, pendientes y rechazados</small>
+      </article>
+      <article class="overview-item">
+        <span>Turnos pendientes</span>
+        <strong id="adminTurnosPendientes">0</strong>
+        <small>Cola activa por atender</small>
+      </article>
+      <article class="overview-item">
+        <span>Turnos resueltos</span>
+        <strong id="adminTurnosResueltos">0</strong>
+        <small>Casos cerrados por administración</small>
+      </article>
+    </section>
+
+    <section class="portal-grid mt-18 portal-grid-balanced">
+      <article class="page-card">
+        <div class="section-heading compact-panel-heading">
+          <div>
+            <span class="section-kicker">Calendario</span>
+            <h2>Configuración académica</h2>
+            <p>Controla la fecha simulada del sistema y las ventanas de inscripción, cancelación y permutas.</p>
+          </div>
+        </div>
+        <form id="adminConfigForm" class="admin-form-grid mt-16">
+          <label>
+            <span>Fecha actual del sistema</span>
+            <input type="datetime-local" id="cfgFechaSistema" required>
+          </label>
+          <label>
+            <span>Límite inscripción directa</span>
+            <input type="datetime-local" id="cfgFechaInscripcion">
+          </label>
+          <label>
+            <span>Límite cancelación</span>
+            <input type="datetime-local" id="cfgFechaCancelacion">
+          </label>
+          <label>
+            <span>Límite permutas</span>
+            <input type="datetime-local" id="cfgFechaPermutas">
+          </label>
+          <div class="admin-inline-actions">
+            <button type="submit" class="btn btn-primary">Guardar calendario</button>
+            <small id="adminCalendarHint">Define los cierres para simular el comportamiento real de la plataforma.</small>
+          </div>
+        </form>
+      </article>
+
+      <article class="page-card">
+        <div class="section-heading compact-panel-heading">
+          <div>
+            <span class="section-kicker">Solicitudes</span>
+            <h2>Estados y resolución</h2>
+            <p>Aquí ves cuántas terminaron directas, por permuta o por vencimiento.</p>
+          </div>
+        </div>
+        <div id="adminEstadosSolicitudes" class="detail-grid"></div>
+        <div class="section-heading compact-panel-heading mt-18">
+          <div>
+            <span class="section-kicker">Resolución</span>
+            <h2>Canal de atención</h2>
+          </div>
+        </div>
+        <div id="adminResolucionSolicitudes" class="detail-grid"></div>
+      </article>
+    </section>
+
+    <section class="portal-grid mt-18 portal-grid-balanced">
+      <article class="page-card">
+        <div class="section-heading compact-panel-heading">
+          <div>
+            <span class="section-kicker">Turnos</span>
+            <h2>Resumen por estado</h2>
+            <p>Seguimiento de la cola para marcar resuelta, rechazada o pendiente.</p>
+          </div>
+        </div>
+        <div id="adminEstadosTurnos" class="detail-grid"></div>
+      </article>
+
+      <article class="page-card">
+        <div class="section-heading compact-panel-heading">
+          <div>
+            <span class="section-kicker">Trazabilidad</span>
+            <h2>Solicitud seleccionada</h2>
+            <p>Selecciona una fila del historial para revisar su detalle completo.</p>
+          </div>
+        </div>
+        <div id="adminDetalleSolicitud" class="empty-state compact-empty">
+          <strong>No hay una solicitud seleccionada.</strong>
+          <span>Haz clic en “Ver detalle” dentro del historial.</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="table-card mt-18">
+      <div class="table-meta">
+        <div>
+          <h2 class="mb-0">Historial completo de solicitudes</h2>
+          <p class="mb-0">Incluye solicitudes directas, permutas, rechazadas y pendientes con su canal de resolución.</p>
+        </div>
+      </div>
+      <div class="table-wrap mt-16">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha</th>
+              <th>Estudiante</th>
+              <th>Tipo</th>
+              <th>Estado</th>
+              <th>Resolución</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="adminTablaSolicitudes">
+            <tr><td colspan="7">Cargando solicitudes...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="table-card mt-18">
+      <div class="table-meta">
+        <div>
+          <h2 class="mb-0">Cola de turnos</h2>
+          <p class="mb-0">Se muestra del más antiguo al más reciente para atender primero el que se generó primero.</p>
+        </div>
+      </div>
+      <div class="table-wrap mt-16">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Fecha</th>
+              <th>Estudiante</th>
+              <th>Programa</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="adminTablaTurnos">
+            <tr><td colspan="6">Cargando turnos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="page-card mt-18">
+      <div class="section-heading compact-panel-heading">
+        <div>
+          <span class="section-kicker">Detalle</span>
+          <h2>Turno seleccionado</h2>
+          <p>Haz clic sobre “Ver detalle” para consultar la información completa y actualizar el estado.</p>
+        </div>
+      </div>
+      <div id="adminDetalleTurno" class="empty-state compact-empty">
+        <strong>No hay un turno seleccionado.</strong>
+        <span>Selecciona uno desde la tabla para ver sus datos y gestionarlo.</span>
+      </div>
+    </section>
+  </main>
+
+  <div data-app-shell="footer"></div>
+  <script src="config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app-ui.js"></script>
+  <script src="js/app-shell.js"></script>
+  <script src="js/app-init.js"></script>
+  <script src="js/admin_dashboard.js"></script>
+</body>
+</html>

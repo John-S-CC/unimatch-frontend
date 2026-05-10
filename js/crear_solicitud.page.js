@@ -89,12 +89,20 @@
     let opciones = disponibles;
 
     if (tipoSolicitud === "cambio_grupo") {
+      // Para permutas se muestran también grupos sin cupo.
+      // El cupo puede liberarse cuando el motor encuentre un intercambio compatible.
       opciones = disponibles.filter((item) => item.id_materia === materiaOrigen && item.id_grupo !== grupoOrigen);
     } else if (tipoSolicitud === "cambio_materia") {
+      // Para cambio de materia también se muestran materias/grupos sin cupo.
       opciones = disponibles.filter((item) => item.id_materia !== materiaOrigen);
     } else if (tipoSolicitud === "nueva_inscripcion") {
-      const gruposInscritos = new Set(inscritas.map((item) => item.id_grupo));
-      opciones = disponibles.filter((item) => !gruposInscritos.has(item.id_grupo));
+      // La inscripción directa sí exige cupos disponibles.
+      const gruposInscritos = new Set(inscritas.map((item) => parseInt(item.id_grupo, 10)));
+      opciones = disponibles.filter((item) => {
+        const grupoId = parseInt(item.id_grupo, 10);
+        const cupos = parseInt(item.cupos_disponibles, 10) || 0;
+        return !gruposInscritos.has(grupoId) && cupos > 0;
+      });
     }
 
     if (!opciones.length) {
