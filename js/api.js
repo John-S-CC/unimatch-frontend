@@ -17,7 +17,7 @@ function buildApiCandidates() {
   // Solo se usa para desarrollo local. En producción configure window.UNIMATCH_API_BASE
   // en config.js apuntando al backend separado.
   if (!window.UNIMATCH_API_BASE && !window.API_BASE) {
-    candidates.push(https://unimatch-backend.onrender.com/api/");
+    candidates.push("https://unimatch-backend.onrender.com/api/");
     if (window.location?.origin?.startsWith("http")) {
       candidates.push(`${window.location.origin}/api/`);
     }
