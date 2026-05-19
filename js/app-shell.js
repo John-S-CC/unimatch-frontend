@@ -3,14 +3,17 @@
     return String(name || 'UE').trim().split(/\s+/).slice(0, 2).map(part => part[0]?.toUpperCase() || '').join('') || 'UE';
   }
 
-  function getUsuario() {
-    try {
-      return JSON.parse(localStorage.getItem('usuario') || 'null');
-    } catch (error) {
-      return null;
-    }
+function getUsuario() {
+  try {
+    return JSON.parse(
+      sessionStorage.getItem('usuario') ||
+      localStorage.getItem('usuario') ||
+      'null'
+    );
+  } catch (error) {
+    return null;
   }
-
+}
   function isAdminRole(rol) {
     return ['admin', 'administrador', 'root'].includes(String(rol || '').toLowerCase());
   }
@@ -38,7 +41,7 @@
   }
 
   async function requestHeaderApi(endpoint) {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     let lastError = null;
 
     for (const base of getApiCandidates()) {
@@ -54,9 +57,8 @@
         const data = text ? JSON.parse(text) : {};
 
         if (response.status === 401) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('usuario');
-        }
+  console.warn('Token no autorizado en header:', base + endpoint);
+}
 
         localStorage.setItem('api_base', base);
         return { ok: response.ok, status: response.status, data };
