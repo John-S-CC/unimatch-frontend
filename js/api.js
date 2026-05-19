@@ -30,7 +30,7 @@ function getUsuarioStorage() {
 }
 
 function getToken() {
-  return localStorage.getItem("token");
+  return sessionStorage.getItem("token") || localStorage.getItem("token");
 }
 
 async function parseResponse(response) {
