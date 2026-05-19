@@ -2,6 +2,8 @@ function normalizeBase(base) {
   if (!base || typeof base !== "string") return null;
 
   base = base.trim();
+
+  // Evita errores como /api/login.phplogin.php
   base = base.replace(/login\.php.*$/i, "");
 
   return base.endsWith("/") ? base : `${base}/`;
@@ -9,18 +11,14 @@ function normalizeBase(base) {
 
 function buildApiCandidates() {
   const candidates = [
-    window.UNIMATCH_API_BASE,
     window.API_BASE,
-    sessionStorage.getItem("api_base")
+    localStorage.getItem("api_base")
   ];
 
-  // Solo se usa para desarrollo local. En producción configure window.UNIMATCH_API_BASE
-  // en config.js apuntando al backend separado.
-  if (!window.UNIMATCH_API_BASE && !window.API_BASE) {
-    candidates.push("https://unimatch-backend.onrender.com/api/");
-    if (window.location?.origin?.startsWith("http")) {
-      candidates.push(`${window.location.origin}/api/`);
-    }
+  candidates.push("https://unimatch-backend-fid5.onrender.com/api/");
+
+  if (window.location?.origin?.startsWith("http")) {
+    candidates.push(`${window.location.origin}/api/`);
   }
 
   return [...new Set(candidates.map(normalizeBase).filter(Boolean))];
@@ -28,7 +26,7 @@ function buildApiCandidates() {
 
 function getUsuarioStorage() {
   try {
-    return JSON.parse(sessionStorage.getItem("usuario") || localStorage.getItem("usuario") || "null");
+    return JSON.parse(localStorage.getItem("usuario") || "null");
   } catch (error) {
     console.error("Error leyendo usuario:", error);
     return null;
@@ -36,23 +34,7 @@ function getUsuarioStorage() {
 }
 
 function getToken() {
-  return sessionStorage.getItem("token") || localStorage.getItem("token");
-}
-
-function setSession(data) {
-  sessionStorage.setItem("usuario", JSON.stringify(data.usuario));
-  sessionStorage.setItem("token", data.token);
-  localStorage.removeItem("usuario");
-  localStorage.removeItem("token");
-}
-
-function clearSessionStorage() {
-  sessionStorage.removeItem("usuario");
-  sessionStorage.removeItem("token");
-  sessionStorage.removeItem("api_base");
-  localStorage.removeItem("usuario");
-  localStorage.removeItem("token");
-  localStorage.removeItem("api_base");
+  return localStorage.getItem("token");
 }
 
 async function parseResponse(response) {
@@ -65,7 +47,7 @@ async function parseResponse(response) {
   try {
     return JSON.parse(text);
   } catch (error) {
-    throw new Error("La API devolvió una respuesta no válida.");
+    throw new Error(`La API devolvió una respuesta no válida: ${text.slice(0, 180)}`);
   }
 }
 
@@ -96,7 +78,8 @@ async function request(endpoint, options = {}) {
       const data = await parseResponse(response);
 
       if (response.status === 401) {
-        clearSessionStorage();
+        localStorage.removeItem("token");
+        localStorage.removeItem("usuario");
       }
 
       if (!response.ok) {
@@ -107,7 +90,7 @@ async function request(endpoint, options = {}) {
         data.httpStatus = response.status;
       }
 
-      sessionStorage.setItem("api_base", base);
+      localStorage.setItem("api_base", base);
       return data;
 
     } catch (error) {
@@ -261,26 +244,5 @@ async function actualizarConfiguracionAcademica(payload) {
       "Content-Type": "application/x-www-form-urlencoded"
     },
     body: body.toString()
-  });
-}
-
-
-async function solicitarRecuperacionPassword(correo) {
-  return request("solicitar_recuperacion.php", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ correo })
-  });
-}
-
-async function restablecerPassword(token, password, confirmacion) {
-  return request("reset_password.php", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ token, password, confirmacion })
   });
 }
