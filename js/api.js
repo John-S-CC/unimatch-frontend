@@ -22,7 +22,11 @@ function buildApiCandidates() {
 
 function getUsuarioStorage() {
   try {
-    return JSON.parse(localStorage.getItem("usuario") || "null");
+    return JSON.parse(
+      sessionStorage.getItem("usuario") ||
+      localStorage.getItem("usuario") ||
+      "null"
+    );
   } catch (error) {
     console.error("Error leyendo usuario:", error);
     return null;
