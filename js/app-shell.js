@@ -31,11 +31,7 @@
   }
 
   function getApiCandidates() {
-    const candidates = [window.API_BASE, localStorage.getItem('api_base')];
-
-    if (window.location?.origin?.startsWith('http')) {
-      candidates.push(`${window.location.origin}/api/`);      
-    }
+    const candidates = [window.UNIMATCH_API_BASE, window.API_BASE, localStorage.getItem('api_base')];
 
     candidates.push('https://unimatch-backend-fid5.onrender.com/api/');
     return [...new Set(candidates.map(normalizeBase).filter(Boolean))];

@@ -11,15 +11,11 @@ function normalizeBase(base) {
 
 function buildApiCandidates() {
   const candidates = [
+    window.UNIMATCH_API_BASE,
     window.API_BASE,
-    localStorage.getItem("api_base")
+    localStorage.getItem("api_base"),
+    "https://unimatch-backend-fid5.onrender.com/api/"
   ];
-
-  candidates.push("https://unimatch-backend-fid5.onrender.com/api/");
-
-  if (window.location?.origin?.startsWith("http")) {
-    candidates.push(`${window.location.origin}/api/`);
-  }
 
   return [...new Set(candidates.map(normalizeBase).filter(Boolean))];
 }
@@ -78,9 +74,8 @@ async function request(endpoint, options = {}) {
       const data = await parseResponse(response);
 
       if (response.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("usuario");
-      }
+  console.warn("Token no autorizado o expirado en:", base + endpoint);
+}
 
       if (!response.ok) {
         throw new Error(data?.error || data?.mensaje || "Error del servidor.");
