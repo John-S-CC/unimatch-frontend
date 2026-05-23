@@ -8,9 +8,11 @@ export default defineConfig({
 
         coverage: {
 
+            enabled: true,
+
             provider: 'v8',
 
-            reporter: ['text', 'lcov'],
+            reporter: ['lcov'],
 
             reportsDirectory: './coverage',
 
