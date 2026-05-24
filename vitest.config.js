@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config'
+import path from 'path'
 
 export default defineConfig({
 
@@ -8,15 +9,25 @@ export default defineConfig({
 
         coverage: {
 
-            enabled: true,
-
             provider: 'v8',
 
             reporter: ['lcov'],
 
             reportsDirectory: './coverage',
 
-            include: ['js/**/*.js']
+            exclude: [
+                'node_modules/',
+                'coverage/'
+            ]
+        }
+    },
+
+    resolve: {
+
+        alias: {
+
+            '@': path.resolve(__dirname, './js')
+
         }
     }
 })
