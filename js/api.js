@@ -228,6 +228,29 @@ async function obtenerConfiguracionAcademica() {
   return request("admin_configuracion_academica.php", { method: "GET" });
 }
 
+
+async function solicitarRecuperacionPassword(correo) {
+    // Apuntamos a tu endpoint en Render que revisamos hace un momento
+    const url = 'https://unimatch-backend-fid5.onmatch-fid5.onrender.com/api/solicitar_recuperacion.php'; 
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ correo: correo })
+    });
+
+    const data = await response.json();
+
+    // Si la respuesta no es exitosa (ej. un error 422 o 500), lanzamos el error
+    if (!response.ok || data.ok === false) {
+        throw new Error(data.mensaje || 'No fue posible solicitar la recuperación.');
+    }
+
+    return data;
+}
+
 async function actualizarConfiguracionAcademica(payload) {
   const body = new URLSearchParams();
 
