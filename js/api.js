@@ -231,7 +231,7 @@ async function obtenerConfiguracionAcademica() {
 
 async function solicitarRecuperacionPassword(correo) {
     // Apuntamos a tu endpoint en Render que revisamos hace un momento
-    const url = 'https://unimatch-backend-fid5.onmatch-fid5.onrender.com/api/solicitar_recuperacion.php'; 
+    const url = 'https://unimatch-backend-fid5.onrender.com/api/solicitar_recuperacion.php'; 
 
     const response = await fetch(url, {
         method: 'POST',
